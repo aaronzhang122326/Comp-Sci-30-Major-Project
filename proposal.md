@@ -2,16 +2,22 @@
 
 ## Description
 
-Here I will describe what I'm going to build...
+The major project will be a video game. The video game will be a 2 dimensional (above view) dungeon game where the player has to fight and complete levels. 
 
 ## Must Have List
 
--first thing 
--second thing 
--etc
+- Using 2D arrays to randomly generate terrain and enemies.
+- Be able to pick up and use weapons
+- Character being able to attack enemies 
+- Enemies being able to locate and attack the player 
+- displaying character data (health, damage) and enemy data
 
 ## Nice to Have List 
 
--more stuff
--other stuff
--etc
+- Mini map of the terrain 
+- Animations of sprite movement and attack
+- Screen becomes red if the character is low on health
+- Basic settings (menu, pause, restart, scoring system)
+- Sound effects and music 
+- Difficulty mode
+
