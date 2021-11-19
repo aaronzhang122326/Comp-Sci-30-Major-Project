@@ -8,7 +8,7 @@ The major project will be a video game. The video game will be a 2 dimensional (
 
 - Using 2D arrays to randomly generate terrain and enemies.
 - Be able to pick up and use weapons
-- Character being able to attack enemies 
+- Character being able to locate enemy direction and attack enemies 
 - Enemies being able to locate and attack the player 
 - displaying character data (health, damage) and enemy data
 

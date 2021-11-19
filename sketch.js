@@ -54,33 +54,51 @@ class Player { //player class
     this.width = width;
     this.height = height;
     this.speed = speed;
-    this.rightFree
-    this.downFree = true;
+    this.rightFree;
+    this.leftFree;
+    this.upFree;
+    this.downFree;
 
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
   }
   move() {
-    // this.positionY = floor(this.y/cellSize);
-    // this.positionX = floor(this.x/cellSize);
-    // if (grid[this.positionY+1][this.positionX] === 1 && (this.y + this.speed >= (this.positionY+1) * cellSize)) {
-    //   this.downFree = false;
-    // }
-    if (this.x + this.speed >= gridSize * cellSize) {
-      t
+    this.rightFree = true;
+    this.leftFree = true;
+    this.upFree = true;
+    this.downFree = true;
+
+    this.positionY = floor(this.y/cellSize);
+    this.positionX = floor(this.x/cellSize);
+    if (this.positionY <= gridSize-1) {
+      if (grid[this.positionY+1][this.positionX] === 1 && this.y + this.height + this.speed >= (this.positionY+1) * cellSize) {
+        this.downFree = false;
+      }
+    }
+    if (this.x + this.width + this.speed >= gridSize * cellSize) {
+      this.rightFree = false;
+    }
+    if (this.x + this.speed <= 0) {
+      this.leftFree = false;
+    }
+    if (this.y + this.height + this.speed >= gridSize * cellSize) {
+      this.downFree = false;
+    }
+    if (this.y + this.speed <= 0) {
+      this.upFree = false;
     }
 
-    if (keyIsDown(87)) {
+    if (keyIsDown(87) && this.upFree) {
       this.y -= this.speed;
     }
-    else if (keyIsDown(83)) {
+    else if (keyIsDown(83) && this.downFree) {
       this.y += this.speed;
     }
     
-    if (keyIsDown(65)) {
+    if (keyIsDown(65) && this.leftFree) {
       this.x -= this.speed;
     }
-    else if (keyIsDown(68)) {
+    else if (keyIsDown(68) && this.rightFree) {
       this.x += this.speed;
     }
   }
