@@ -7,13 +7,17 @@
 let grid;
 let cellSize = 50;
 let playerOne;
+let playerOnePositionX;
+let playerOnePositionY;
 let gridSize = 20;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   grid = create2DArray(gridSize, gridSize);
-  generateRoom(); //change later
-  playerOne = new Player(0, 0, 30, 30, 5);
+  generateDungeon();
+  //generateRoom(); //change later
+  spawnLocation(playerOnePositionX, playerOnePositionY);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, 30, 30, 5);
 }
 
 function draw() {
@@ -165,22 +169,50 @@ class Player { //player class
   }
 }
 
-function generateRoom() {
+function generateRoom(locX, locY) {
   let roomWidth = random(4,8);
   let roomHeight = random(4,8);
-  let locationY = 1;
-  let locationX = 1;
+  let locationY = locY;
+  let locationX = locX;
 
-  for (let y = locationY; y <= roomHeight; y++) {//walls
-    for (let x = locationX; x <= roomWidth; x++){
+  for (let y = locationY; y <= locationY + roomHeight; y++) {//walls
+    for (let x = locationX; x <= locationX + roomWidth; x++){
       grid[y][x] = 1;
     }
   }
 
-  for (let y = locationY+1; y <= roomHeight-1; y++) {//interior
-    for (let x = locationX+1; x <= roomWidth-1; x++){
+  for (let y = locationY+1; y <= locationY + roomHeight-1; y++) {//interior
+    for (let x = locationX+1; x <= locationX + roomWidth-1; x++){
       grid[y][x] = 2;
     }
   }
 }
 
+function generateDungeon() {
+  //let roomList = [];
+  let roomNumber = random(4,7);
+
+  for (let i = 0; i <= roomNumber; i++) {
+    generateRoom(round(random(1, gridSize-9)), round(random(1, gridSize-9)));
+  }
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if (grid[y][x] !== 0) {
+        if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
+          grid[y][x] = 2;
+        }
+      }
+    }
+  }
+} 
+
+function spawnLocation(objectX, objectY) { //edit later
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if (grid[y][x] === 2) {
+        return playerOnePositionX = x * cellSize, playerOnePositionY = y * cellSize;
+      }
+    }
+  }
+}
