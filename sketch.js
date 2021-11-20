@@ -10,6 +10,8 @@ let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
 let gridSize = 20;
+let roomList = [];
+let iCount = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -170,10 +172,13 @@ class Player { //player class
 }
 
 function generateRoom(locX, locY) {
-  let roomWidth = random(4,8);
-  let roomHeight = random(4,8);
+  let roomWidth = round(random(4,8));
+  let roomHeight = round(random(4,8));
+
   let locationY = locY;
   let locationX = locX;
+
+  roomList.push([locationX, locationY]);
 
   for (let y = locationY; y <= locationY + roomHeight; y++) {//walls
     for (let x = locationX; x <= locationX + roomWidth; x++){
@@ -188,19 +193,55 @@ function generateRoom(locX, locY) {
   }
 }
 
+function generateBridge() {
+  //iCount = 0;
+  for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]; y++) {//x < roomList[i+1][0] - roomList[i][0]
+    for (let x = 0; x < 3; x++) {
+      grid[y][x] = 1;
+    }
+  }
+  for (let y = 0; y < 3; y++) {
+    for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
+      grid[y][x] = 1;
+    }
+  }
+}
+
 function generateDungeon() {
-  //let roomList = [];
   let roomNumber = random(4,7);
 
   for (let i = 0; i <= roomNumber; i++) {
     generateRoom(round(random(1, gridSize-9)), round(random(1, gridSize-9)));
+    if (i > 0) {
+      generateBridge();
+    }
+    iCount += 1;
+    console.log("1");
   }
 
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      if (grid[y][x] !== 0) {
-        if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
-          grid[y][x] = 2;
+
+
+  for (let i = 0; i < 3; i++) {
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (grid[y][x] !== 0) {
+          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
+            if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
+              grid[y][x] = 2;
+            }
+          }
+        }
+      }
+    }
+    //for (let i = 0; i < 3; i++) {}
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (grid[y][x] === 1) {
+          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
+            if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
+              grid[y][x] = 2;
+            }
+          }
         }
       }
     }
