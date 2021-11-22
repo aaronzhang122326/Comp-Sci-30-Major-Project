@@ -11,6 +11,7 @@ The major project will be a video game. The video game will be a 2 dimensional (
 - Character being able to locate enemy direction and attack enemies 
 - Enemies being able to locate and attack the player 
 - displaying character data (health, damage) and enemy data
+- Sound effects and music 
 
 ## Nice to Have List 
 
@@ -18,6 +19,5 @@ The major project will be a video game. The video game will be a 2 dimensional (
 - Animations of sprite movement and attack
 - Screen becomes red if the character is low on health
 - Basic settings (menu, pause, restart, scoring system)
-- Sound effects and music 
 - Difficulty mode
 
