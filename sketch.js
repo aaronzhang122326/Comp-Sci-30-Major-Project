@@ -188,19 +188,36 @@ function generateRoom(locX, locY) {
 
   for (let y = locationY+1; y <= locationY + roomHeight-1; y++) {//interior
     for (let x = locationX+1; x <= locationX + roomWidth-1; x++){
-      grid[y][x] = 2;
+      //grid[y][x] = 2;
     }
   }
 }
 
+function generateInterior(){
+  
+  for (let y = 0; y < gridSize; y++) {//interior
+    let interior = false;
+    for (let x = 0; x < gridSize; x++){
+      if (interior) {
+        grid[y][x] = 0;
+      }
+      if (grid[y][x] === 1) {
+        interior = true;
+      }
+      if (grid)
+      //grid[y][x] = 2;
+    }
+  }
+} 
+
 function generateBridge() {
   //iCount = 0;
   for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]; y++) {//x < roomList[i+1][0] - roomList[i][0]
-    for (let x = 0; x < 3; x++) {
+    for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
       grid[y][x] = 1;
     }
   }
-  for (let y = 0; y < 3; y++) {
+  for (let y = roomList[iCount-1][1]; y < roomList[iCount-1][1] + 3; y++) {
     for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
       grid[y][x] = 1;
     }
