@@ -194,17 +194,22 @@ function generateRoom(locX, locY) {
 }
 
 function generateInterior(){
-  
+  let interior = false;
   for (let y = 0; y < gridSize; y++) {//interior
-    let interior = false;
     for (let x = 0; x < gridSize; x++){
-      if (interior) {
-        grid[y][x] = 0;
+      if (interior === true) {
+        grid[y][x] = 2;
+        console.log("2");
       }
       if (grid[y][x] === 1) {
         interior = true;
+        console.log("1");
       }
-      if (grid)
+      if (interior && grid[y][x] === 0) {
+        interior = false;
+        grid[y][x-1] = 1;
+      }
+
       //grid[y][x] = 2;
     }
   }
@@ -233,8 +238,8 @@ function generateDungeon() {
       generateBridge();
     }
     iCount += 1;
-    console.log("1");
   }
+  generateInterior();
 
 
 
@@ -244,7 +249,7 @@ function generateDungeon() {
         if (grid[y][x] !== 0) {
           if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
             if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
-              grid[y][x] = 2;
+              //grid[y][x] = 2;
             }
           }
         }
@@ -256,7 +261,7 @@ function generateDungeon() {
         if (grid[y][x] === 1) {
           if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
             if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
-              grid[y][x] = 2;
+              //grid[y][x] = 2;
             }
           }
         }
