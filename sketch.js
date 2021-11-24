@@ -5,11 +5,11 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 let grid;
-let cellSize = 50;
+let cellSize = 15;
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
-let gridSize = 20;
+let gridSize = 60;
 let roomList = [];
 let iCount = 0;
 
@@ -19,7 +19,7 @@ function setup() {
   generateDungeon();
   //generateRoom(); //change later
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, 30, 30, 5);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, 7.5, 7.5, 5);
 }
 
 function draw() {
@@ -197,16 +197,19 @@ function generateInterior(){
   let interior = false;
   for (let y = 0; y < gridSize; y++) {//interior
     for (let x = 0; x < gridSize; x++){
-      if (interior === true) {
-        grid[y][x] = 2;
-        console.log("2");
+      if (interior === true && grid[y][x] === 1) {
+        if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0) {
+          //grid[y][x] = 2;
+          console.log("2");
+        }
       }
-      if (grid[y][x] === 1) {
+      if (grid[y][x] === 1 && interior === false) {
         interior = true;
         console.log("1");
       }
       if (interior && grid[y][x] === 0) {
         interior = false;
+        console.log("3");
         grid[y][x-1] = 1;
       }
 
@@ -230,10 +233,10 @@ function generateBridge() {
 }
 
 function generateDungeon() {
-  let roomNumber = random(4,7);
+  let roomNumber = random(10,14);
 
   for (let i = 0; i <= roomNumber; i++) {
-    generateRoom(round(random(1, gridSize-9)), round(random(1, gridSize-9)));
+    generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
       generateBridge();
     }
