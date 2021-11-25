@@ -200,16 +200,13 @@ function generateInterior(){
       if (interior === true && grid[y][x] === 1) {
         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0) {
           //grid[y][x] = 2;
-          console.log("2");
         }
       }
       if (grid[y][x] === 1 && interior === false) {
         interior = true;
-        console.log("1");
       }
       if (interior && grid[y][x] === 0) {
         interior = false;
-        console.log("3");
         grid[y][x-1] = 1;
       }
 
@@ -233,12 +230,13 @@ function generateBridge() {
 }
 
 function generateDungeon() {
-  let roomNumber = random(10,14);
+  let roomNumber = 2; //round(random(10,14))
 
   for (let i = 0; i <= roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
-      generateBridge();
+      //generateBridge();
+      console.log("1", roomNumber);
     }
     iCount += 1;
   }
