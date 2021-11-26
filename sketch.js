@@ -171,6 +171,16 @@ class Player { //player class
   }
 }
 
+class Enemy {
+  constructor(x, y, width, height, speed) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.speed = speed;
+  }
+}
+
 function generateRoom(locX, locY) {
   let roomWidth = round(random(4,8));
   let roomHeight = round(random(4,8));
@@ -308,3 +318,5 @@ function spawnLocation(objectX, objectY) { //edit later
     }
   }
 }
+
+function spawnEnemies();
