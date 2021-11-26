@@ -199,7 +199,7 @@ function generateInterior(){
     for (let x = 0; x < gridSize; x++){
       if (interior === true && grid[y][x] === 1) {
         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0) {
-          //grid[y][x] = 2;
+          grid[y][x] = 2;
         }
       }
       if (grid[y][x] === 1 && interior === false) {
@@ -218,63 +218,54 @@ function generateInterior(){
 function generateBridge() { //problem (L shape)
   //iCount = 0;
 
-  if (roomList[iCount-1][1] > roomList[iCount][1]){
-    for (let y = roomList[iCount-1][1]; y < roomList[iCount-1][1]; y++) {//
+  if (roomList[iCount-1][1] > roomList[iCount][1]){ //building up
+    for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {//poss prob
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
+        console.log("5");
       }
     }
     console.log("1");
   }
-  else if (roomList[iCount][1] > roomList[iCount-1][1]) {
-    for (let y = roomList[iCount][1]-1; y >= roomList[iCount-1][1]; y--) {//x < roomList[i+1][0] - roomList[i][0]
+  else if (roomList[iCount][1] > roomList[iCount-1][1]) { //building down
+    for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]+3; y++) {//x < roomList[i+1][0] - roomList[i][0]
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
+        console.log("5");
       }
     }
     console.log("2");
   }
 
-  // for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]; y++) {//x < roomList[i+1][0] - roomList[i][0]
-  //   for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
-  //     grid[y][x] = 1;
-  //   }
-  // }
-
-  if (roomList[iCount-1][0] > roomList[iCount][0]) { //problem
-    for (let y = roomList[iCount-1][1]; y < roomList[iCount-1][1] + 3; y++) {
-      for (let x = roomList[iCount-1][0]; x < roomList[iCount-1][0]; x++) {
+  if (roomList[iCount-1][0] > roomList[iCount][0]) { //building left
+    for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 3; y++) {
+      for (let x = roomList[iCount-1][0]; x > roomList[iCount][0]; x--) {
         grid[y][x] = 1;
+        console.log("5");
       }
     }
     console.log("3");
   }
 
-  else if (roomList[iCount-1][0] < roomList[iCount][0]) {
-    for (let y = roomList[iCount-1][1]; y < roomList[iCount-1][1] + 3; y++) {
-      for (let x = roomList[iCount][0]; x >= roomList[iCount-1][0]; x--) {
+  else if (roomList[iCount-1][0] < roomList[iCount][0]) {//building right
+    for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 3; y++) {
+      for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
         grid[y][x] = 1;
+        console.log("5");
       }
     }
     console.log("4");
   }
-
-
-  // for (let y = roomList[iCount-1][1]; y < roomList[iCount-1][1] + 3; y++) {
-  //   for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
-  //     grid[y][x] = 1;
-  //   }
-  // }
 }
 
-function generateDungeon() { //problem
-  let roomNumber = 2; //round(random(10,14))
+function generateDungeon() { 
+  let roomNumber = round(random(10,14)); 
 
   for (let i = 0; i < roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
       generateBridge();
-      //console.log("1", roomNumber);
+      console.log("1", roomNumber);
     }
     iCount += 1;
   }
@@ -288,19 +279,18 @@ function generateDungeon() { //problem
         if (grid[y][x] !== 0) {
           if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
             if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
-              //grid[y][x] = 2;
+              grid[y][x] = 2;
             }
           }
         }
       }
     }
-    //for (let i = 0; i < 3; i++) {}
     for (let y = 0; y < gridSize; y++) {
       for (let x = 0; x < gridSize; x++) {
         if (grid[y][x] === 1) {
           if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
             if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
-              //grid[y][x] = 2;
+              grid[y][x] = 2;
             }
           }
         }
