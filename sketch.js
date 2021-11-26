@@ -232,39 +232,31 @@ function generateBridge() { //problem (L shape)
     for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {//poss prob
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
-        console.log("5");
       }
     }
-    console.log("1");
   }
   else if (roomList[iCount][1] > roomList[iCount-1][1]) { //building down
     for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]+3; y++) {//x < roomList[i+1][0] - roomList[i][0]
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
-        console.log("5");
       }
     }
-    console.log("2");
   }
 
   if (roomList[iCount-1][0] > roomList[iCount][0]) { //building left
     for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 3; y++) {
       for (let x = roomList[iCount-1][0]; x > roomList[iCount][0]; x--) {
         grid[y][x] = 1;
-        console.log("5");
       }
     }
-    console.log("3");
   }
 
   else if (roomList[iCount-1][0] < roomList[iCount][0]) {//building right
     for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 3; y++) {
       for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
         grid[y][x] = 1;
-        console.log("5");
       }
     }
-    console.log("4");
   }
 }
 
@@ -275,7 +267,6 @@ function generateDungeon() {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
       generateBridge();
-      console.log("1", roomNumber);
     }
     iCount += 1;
   }
@@ -319,4 +310,6 @@ function spawnLocation(objectX, objectY) { //edit later
   }
 }
 
-function spawnEnemies();
+function spawnEnemies() {
+
+}
