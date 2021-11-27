@@ -11,7 +11,10 @@ let playerOnePositionX;
 let playerOnePositionY;
 let gridSize = 60;
 let roomList = [];
+let roomNumber;
 let iCount = 0;
+
+let enemyList = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -20,6 +23,7 @@ function setup() {
   //generateRoom(); //change later
   spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(playerOnePositionX, playerOnePositionY, 7.5, 7.5, 5);
+  spawnEnemies();
 }
 
 function draw() {
@@ -29,6 +33,11 @@ function draw() {
   //player movement
   playerOne.move();
   playerOne.display();
+
+  //enemy movement
+  for (let i = 0; i < enemyList.length; i++) {
+    enemyList[i].display();
+  }
 }
 
 
@@ -179,6 +188,11 @@ class Enemy {
     this.height = height;
     this.speed = speed;
   }
+
+  display() {
+    fill("green");
+    rect(this.x, this.y, this.width, this.height);
+  }
 }
 
 function generateRoom(locX, locY) {
@@ -188,7 +202,7 @@ function generateRoom(locX, locY) {
   let locationY = locY;
   let locationX = locX;
 
-  roomList.push([locationX, locationY]);
+  roomList.push([locationX, locationY, roomWidth, roomHeight]);
 
   for (let y = locationY; y <= locationY + roomHeight; y++) {//walls
     for (let x = locationX; x <= locationX + roomWidth; x++){
@@ -261,7 +275,7 @@ function generateBridge() { //problem (L shape)
 }
 
 function generateDungeon() { 
-  let roomNumber = round(random(10,14)); 
+  roomNumber = round(random(10,14)); 
 
   for (let i = 0; i < roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
@@ -311,5 +325,18 @@ function spawnLocation(objectX, objectY) { //edit later
 }
 
 function spawnEnemies() {
-
+  for (let i = 0; i < roomNumber; i++){
+    let spaceCount = 0;
+    for (let y = roomList[i][1]; y < roomList[i][1] + roomList[i][3]; y++){
+      for (let x = roomList[i][0]; x < roomList[i][0] + roomList[i][2]; x++) {
+        if (grid[y][x] === 2) {
+          spaceCount ++;
+        }
+      }
+    }
+    for (let a = 0; a < round(spaceCount/5); a++) {
+      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), 7.5, 7.5, 5);
+      enemyList.push(minion);
+    }
+  }  
 }
