@@ -32,10 +32,13 @@ function draw() {
 
   //player movement
   playerOne.move();
+  
   playerOne.display();
+
 
   //enemy movement
   for (let i = 0; i < enemyList.length; i++) {
+    enemyList[i].move();
     enemyList[i].display();
   }
 }
@@ -175,6 +178,8 @@ class Player { //player class
     }
   }
   display() {
+    fill("grey");
+    circle(this.x+this.width/2, this.y+this.width/2, 70);
     fill("red");
     rect(this.x, this.y, this.width, this.height);
   }
@@ -187,6 +192,22 @@ class Enemy {
     this.width = width;
     this.height = height;
     this.speed = speed;
+  }
+  move() {
+    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < 35) {
+      if (this.x < playerOne.x) {
+        this.x += this.speed;
+      }
+      else if (this.x > playerOne.x) {
+        this.x -= this.speed;
+      }
+      if (this.y < playerOne.y) {
+        this.y += this.speed;
+      }
+      else if (this.y > playerOne.y) {
+        this.y -= this.speed;
+      }
+    } 
   }
 
   display() {
