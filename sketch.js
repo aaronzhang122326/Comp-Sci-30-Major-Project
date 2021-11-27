@@ -5,16 +5,21 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 let grid;
-let cellSize = 15;
+let cellSize = 120;
+let gridSize = 60;
+
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
-let gridSize = 60;
+
 let roomList = [];
 let roomNumber;
 let iCount = 0;
 
 let enemyList = [];
+
+let screenMoveX = 0;
+let screenMoveY = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -22,8 +27,10 @@ function setup() {
   generateDungeon();
   //generateRoom(); //change later
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, 7.5, 7.5, 5);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 5);
   spawnEnemies();
+  // screenMoveX -= round(playerOne.x/2);
+  // screenMoveY -= round(playerOne.y/2);
 }
 
 function draw() {
@@ -67,7 +74,7 @@ function displayGrid(col, row) {
       if (grid[y][x] === 2) {
         fill("white");
       }
-      rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      rect(x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
     }
   }
 }
@@ -96,7 +103,7 @@ class Player { //player class
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
 
-    if (this.positionY <= gridSize-2) { //moving down sanity check
+    if (this.positionY <= gridSize-2) { //moving down sanity check //problem
       if (grid[this.positionY+1][this.positionX] === 1 && this.y + this.height + this.speed >= (this.positionY+1) * cellSize) {
         this.downFree = false;
       }
@@ -164,22 +171,26 @@ class Player { //player class
     }
 
     if (keyIsDown(87) && this.upFree) {
-      this.y -= this.speed;
+      //this.y -= this.speed;
+      screenMoveY += this.speed; 
     }
     else if (keyIsDown(83) && this.downFree) {
-      this.y += this.speed;
+      //this.y += this.speed;
+      screenMoveY -= this.speed; 
     }
     
     if (keyIsDown(65) && this.leftFree) {
-      this.x -= this.speed;
+      //this.x -= this.speed;
+      screenMoveX += this.speed; 
     }
     else if (keyIsDown(68) && this.rightFree) {
-      this.x += this.speed;
+      screenMoveX -= this.speed; 
+      //this.x += this.speed;
     }
   }
   display() {
     fill("grey");
-    circle(this.x+this.width/2, this.y+this.width/2, 70);
+    //circle(this.x+this.width/2, this.y+this.width/2, 70);
     fill("red");
     rect(this.x, this.y, this.width, this.height);
   }
@@ -194,7 +205,7 @@ class Enemy {
     this.speed = speed;
   }
   move() {
-    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < 35) {
+    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *2) {
       if (this.x < playerOne.x) {
         this.x += this.speed;
       }
@@ -212,7 +223,7 @@ class Enemy {
 
   display() {
     fill("green");
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
@@ -356,7 +367,7 @@ function spawnEnemies() {
       }
     }
     for (let a = 0; a < round(spaceCount/5); a++) {
-      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), 7.5, 7.5, 5);
+      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5);
       enemyList.push(minion);
     }
   }  
