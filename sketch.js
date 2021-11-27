@@ -11,6 +11,7 @@ let gridSize = 60;
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
+let bulletList = [];
 
 let roomList = [];
 let roomNumber;
@@ -29,8 +30,8 @@ function setup() {
   spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 5);
   spawnEnemies();
-  // screenMoveX -= round(playerOne.x/2);
-  // screenMoveY -= round(playerOne.y/2);
+  screenMoveX -= round(width/2+(playerOne.x-width));
+  screenMoveY -= round(height/2+(playerOne.y-height));
 }
 
 function draw() {
@@ -39,7 +40,7 @@ function draw() {
 
   //player movement
   playerOne.move();
-  
+  playerOne.shoot();
   playerOne.display();
 
 
@@ -48,7 +49,15 @@ function draw() {
     enemyList[i].move();
     enemyList[i].display();
   }
+
+  //bullets
+  for (let i = 0; i < bulletList.length; i++){
+    bulletList[i].move();
+    bulletList[i].display();
+  }
 }
+
+
 
 
 //creating and displaying grid
@@ -151,11 +160,6 @@ class Player { //player class
         }
       }
     }
-    // if (this.positionY <= gridSize-2) {
-    //   if (this.y + this.height >= (this.positionY+1) * cellSize) {
-    //     this.leftFree = false;
-    //   }
-    // }
 
     if (this.x + this.width + this.speed >= gridSize * cellSize) {
       this.rightFree = false;
@@ -171,28 +175,56 @@ class Player { //player class
     }
 
     if (keyIsDown(87) && this.upFree) {
-      //this.y -= this.speed;
+      this.y -= this.speed;
       screenMoveY += this.speed; 
     }
     else if (keyIsDown(83) && this.downFree) {
-      //this.y += this.speed;
+      this.y += this.speed;
       screenMoveY -= this.speed; 
     }
     
     if (keyIsDown(65) && this.leftFree) {
-      //this.x -= this.speed;
+      this.x -= this.speed;
       screenMoveX += this.speed; 
     }
     else if (keyIsDown(68) && this.rightFree) {
+      this.x += this.speed;
       screenMoveX -= this.speed; 
-      //this.x += this.speed;
+      
     }
   }
   display() {
     fill("grey");
     //circle(this.x+this.width/2, this.y+this.width/2, 70);
     fill("red");
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+  }
+
+  shoot() {
+    if (mouseIsPressed) {
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 5, 5);
+      bulletList.push(playerBullet);
+    }
+  }
+}
+
+class Bullet {
+  constructor(x, y, radius, speed) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.speed = speed;
+    this.disX = mouseX - screenMoveX - playerOne.x;
+    this.disY = mouseY - screenMoveY - playerOne.y;
+  }
+  move() {
+    this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+    this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+  }
+  display() {
+    console.log("2");
+    fill("red");
+    circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
   }
 }
 
@@ -271,8 +303,7 @@ function generateInterior(){
   }
 } 
 
-function generateBridge() { //problem (L shape)
-  //iCount = 0;
+function generateBridge() {
 
   if (roomList[iCount-1][1] > roomList[iCount][1]){ //building up
     for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {//poss prob
