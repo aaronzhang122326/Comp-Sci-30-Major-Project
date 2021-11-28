@@ -22,6 +22,9 @@ let enemyList = [];
 let screenMoveX = 0;
 let screenMoveY = 0;
 
+let time;
+let lastTime;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   grid = create2DArray(gridSize, gridSize);
@@ -32,11 +35,14 @@ function setup() {
   spawnEnemies();
   screenMoveX -= round(width/2+(playerOne.x-width));
   screenMoveY -= round(height/2+(playerOne.y-height));
+  time = millis();
+  lastTime = time;
 }
 
 function draw() {
   background(220);
-  displayGrid(gridSize, gridSize);
+  displayGrid(gridSize, gridSize); 
+  time = millis();
 
   //player movement
   playerOne.move();
@@ -48,12 +54,18 @@ function draw() {
   for (let i = 0; i < enemyList.length; i++) {
     enemyList[i].move();
     enemyList[i].display();
+    if (enemyList[i].lives <= 0) {
+      enemyList.splice(i, 1);
+    }
   }
 
   //bullets
   for (let i = 0; i < bulletList.length; i++){
     bulletList[i].move();
     bulletList[i].display();
+    if (bulletList[i].hit <= 0) {
+      bulletList.splice(i, 1);
+    }
   }
 }
 
@@ -201,25 +213,34 @@ class Player { //player class
   }
 
   shoot() {
-    if (mouseIsPressed) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 5, 5);
+    if (mouseIsPressed &&  time - lastTime > 500) {
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 5, 20, 1);
       bulletList.push(playerBullet);
+      lastTime = time;
     }
   }
 }
 
 class Bullet {
-  constructor(x, y, radius, speed) {
+  constructor(x, y, radius, speed, hit) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.speed = speed;
+    this.hit = hit;
     this.disX = mouseX - screenMoveX - playerOne.x;
     this.disY = mouseY - screenMoveY - playerOne.y;
   }
   move() {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+
+    for (let i = 0; i < enemyList.length; i++){
+      if (this.x > enemyList[i].x && this.x < enemyList[i].x + enemyList[i].width && this.y > enemyList[i].y && this.y < enemyList[i].y + enemyList[i].height){
+        this.hit -= 1;
+        enemyList[i].lives -=1;
+      }
+    }
   }
   display() {
     console.log("2");
@@ -229,12 +250,13 @@ class Bullet {
 }
 
 class Enemy {
-  constructor(x, y, width, height, speed) {
+  constructor(x, y, width, height, speed, lives) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.speed = speed;
+    this.lives = lives;
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *2) {
@@ -398,7 +420,7 @@ function spawnEnemies() {
       }
     }
     for (let a = 0; a < round(spaceCount/5); a++) {
-      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5);
+      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
       enemyList.push(minion);
     }
   }  
