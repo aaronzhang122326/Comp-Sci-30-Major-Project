@@ -23,7 +23,7 @@ let screenMoveX = 0;
 let screenMoveY = 0;
 
 let time;
-let lastTime;
+let shootLastTime;
 
 let floorImg;
 let wallImg;
@@ -39,18 +39,19 @@ function setup() {
   generateDungeon();
   //generateRoom(); //change later
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 10, 250);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 10, 250, 100);
   spawnEnemies();
   screenMoveX -= round(width/2+(playerOne.x-width));
   screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
-  lastTime = time;
+  shootLastTime = time;
 }
 
 function draw() {
   background(220);
   displayGrid(gridSize, gridSize); 
   time = millis();
+  console.log(playerOne.health);
 
   //player movement
   playerOne.move();
@@ -117,7 +118,7 @@ function displayGrid(col, row) {
 }
 
 class Player { //player class
-  constructor(x, y, width, height, speed, shootSpeed) {
+  constructor(x, y, width, height, speed, shootSpeed, health) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -128,6 +129,7 @@ class Player { //player class
     this.upFree;
     this.downFree;
     this.shootSpeed = shootSpeed;
+    this.health = health;
 
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
@@ -230,10 +232,10 @@ class Player { //player class
   }
 
   shoot() {
-    if (mouseIsPressed &&  time - lastTime > this.shootSpeed) {
+    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
       let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
       bulletList.push(playerBullet);
-      lastTime = time;
+      shootLastTime = time;
     }
   }
 }
@@ -260,7 +262,7 @@ class Bullet {
     }
   }
   display() {
-    console.log("2");
+    //console.log("2");
     fill("red");
     circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
   }
@@ -274,6 +276,7 @@ class Enemy {
     this.height = height;
     this.speed = speed;
     this.lives = lives;
+    this.attackLastTime = time;
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
@@ -290,7 +293,43 @@ class Enemy {
         this.y -= this.speed;
       }
     } 
+    if (time - this.attackLastTime > 2000) {
+      if (this.x - playerOne.x > 0) { //checking for enemy character coliision
+        if (this.x - playerOne.x < this.width) {
+          if (this.y - playerOne.y > 0) { 
+            if (this.y - playerOne.y < this.height) {
+              playerOne.health -= 5;
+            }
+            
+          }
+          else {
+            if (-(this.y - playerOne.y) < playerOne.height) {
+              playerOne.health -= 5;
+            }
+          }
+        }
+      }
+      else {
+        if (-(this.x - playerOne.x) < playerOne.width) {
+          if (this.y - playerOne.y > 0) { 
+            if (this.y - playerOne.y < this.height) {
+              playerOne.health -= 5;
+            }
+          }
+          else {
+            if (-(this.y - playerOne.y) < playerOne.height) {
+              playerOne.health -= 5;
+            }
+          }
+        }
+      }
+      
+    }
+    this.attackLastTime = time;
   }
+    
+  //   if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width || this.x + width < playerOne.x && this.x < playerOne.x + playerOne.width )
+  // }
 
   display() {
     fill("green");
@@ -442,4 +481,5 @@ function spawnEnemies() {
     }
   }  
 }
+
 
