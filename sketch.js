@@ -103,7 +103,7 @@ function displayGrid(col, row) {
         rect(x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
       if (grid[y][x] === 1) { //wall
-        image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize)
+        image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         //fill("blue");
       }
       if (grid[y][x] === 2) { //interior
