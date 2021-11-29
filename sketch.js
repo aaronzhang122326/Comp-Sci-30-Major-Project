@@ -231,7 +231,7 @@ class Player { //player class
 
   shoot() {
     if (mouseIsPressed &&  time - lastTime > this.shootSpeed) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 1);
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
       bulletList.push(playerBullet);
       lastTime = time;
     }
@@ -252,7 +252,7 @@ class Bullet {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
 
-    for (let i = 0; i < enemyList.length; i++){
+    for (let i = 0; i < enemyList.length; i++){//problem
       if (this.x > enemyList[i].x && this.x < enemyList[i].x + enemyList[i].width && this.y > enemyList[i].y && this.y < enemyList[i].y + enemyList[i].height){
         this.hit -= 1;
         enemyList[i].lives -=1;
