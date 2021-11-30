@@ -27,10 +27,12 @@ let shootLastTime;
 
 let floorImg;
 let wallImg;
+let slashImg;
 
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
   wallImg = loadImage("assets/wallOne.png");
+  slashImg = loadImage("assets/swordSlash.png");
 }
 
 function setup() {
@@ -56,6 +58,7 @@ function draw() {
   //player movement
   playerOne.move();
   playerOne.shoot();
+  playerOne.slash();
   playerOne.display();
 
 
@@ -78,8 +81,9 @@ function draw() {
     else if (bulletList[i].hit <= 0) {
       bulletList.splice(i, 1);
     }
-
   }
+
+  displayData();
 }
 
 
@@ -231,11 +235,19 @@ class Player { //player class
     rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
-  shoot() {
+shoot() { //good code
+  //   if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
+  //     let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
+  //     bulletList.push(playerBullet);
+  //     shootLastTime = time;
+  //   }
+  }
+  slash(){ //problem
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
-      bulletList.push(playerBullet);
       shootLastTime = time;
+      if (shootLastTime - time < 2000) {
+        image(slashImg, this.x + screenMoveX -40, this.y + screenMoveY - 20, this.width, this.height*2);
+      }
     }
   }
 }
@@ -276,7 +288,7 @@ class Enemy {
     this.height = height;
     this.speed = speed;
     this.lives = lives;
-    this.attackLastTime = time;
+    this.attackLastTime = 0;
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
@@ -293,7 +305,7 @@ class Enemy {
         this.y -= this.speed;
       }
     } 
-    if (time - this.attackLastTime > 2000) {
+    if (time - this.attackLastTime > 1000) {
       if (this.x - playerOne.x > 0) { //checking for enemy character coliision
         if (this.x - playerOne.x < this.width) {
           if (this.y - playerOne.y > 0) { 
@@ -323,9 +335,8 @@ class Enemy {
           }
         }
       }
-      
+      this.attackLastTime = time;
     }
-    this.attackLastTime = time;
   }
     
   //   if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width || this.x + width < playerOne.x && this.x < playerOne.x + playerOne.width )
@@ -482,4 +493,11 @@ function spawnEnemies() {
   }  
 }
 
-
+function displayData() {
+  if (playerOne.health >= 0) {
+    fill("green");
+    rect(50, 50, playerOne.health* 5, 25);
+    fill("red");
+    rect(50 + playerOne.health*5, 50, 500-playerOne.health*5, 25);
+  } 
+}
