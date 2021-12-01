@@ -29,6 +29,8 @@ let floorImg;
 let wallImg;
 let slashImg;
 
+let slashing = false;
+
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
   wallImg = loadImage("assets/wallOne.png");
@@ -53,7 +55,7 @@ function draw() {
   background(220);
   displayGrid(gridSize, gridSize); 
   time = millis();
-  console.log(playerOne.health);
+  //console.log(playerOne.health);
 
   //player movement
   playerOne.move();
@@ -235,20 +237,32 @@ class Player { //player class
     rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
-shoot() { //good code
-  //   if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
-  //     let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
-  //     bulletList.push(playerBullet);
-  //     shootLastTime = time;
-  //   }
+  shoot() { //good code
+    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
+      bulletList.push(playerBullet);
+      shootLastTime = time;
+    }
   }
   slash(){ //problem
-    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
-      shootLastTime = time;
-      if (shootLastTime - time < 2000) {
-        image(slashImg, this.x + screenMoveX -40, this.y + screenMoveY - 20, this.width, this.height*2);
-      }
-    }
+  //   if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
+  //     //console.log("2");
+  //     slashing = true;
+  //     shootLastTime = time;
+  //   }
+  //   if (slashing) { // improve animation later
+  //     angleMode(DEGREES);
+  //     push();
+  //     translate(this.x + screenMoveX -40, this.y + screenMoveY - 20);
+  //     rotate(45);
+  //     image(slashImg, 0, 0, this.width, this.height*2);
+  //     pop(); //change later
+  //   }
+
+  //   if (time - shootLastTime > 100) {
+  //     //console.log("1");
+  //     slashing = false;
+  //   }
   }
 }
 
