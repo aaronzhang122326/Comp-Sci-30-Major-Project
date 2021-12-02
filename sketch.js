@@ -30,6 +30,7 @@ let wallImg;
 let slashImg;
 
 let slashing = false;
+let slashAngle;
 
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
@@ -238,31 +239,33 @@ class Player { //player class
   }
 
   shoot() { //good code
-    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
-      bulletList.push(playerBullet);
-      shootLastTime = time;
-    }
+    // if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
+    //   let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
+    //   bulletList.push(playerBullet);
+    //   shootLastTime = time;
+    // }
   }
   slash(){ //problem
-  //   if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
-  //     //console.log("2");
-  //     slashing = true;
-  //     shootLastTime = time;
-  //   }
-  //   if (slashing) { // improve animation later
-  //     angleMode(DEGREES);
-  //     push();
-  //     translate(this.x + screenMoveX -40, this.y + screenMoveY - 20);
-  //     rotate(45);
-  //     image(slashImg, 0, 0, this.width, this.height*2);
-  //     pop(); //change later
-  //   }
+    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
+      //console.log("2");
+      angleMode(DEGREES);
+      slashing = true;
+      shootLastTime = time;
+      slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
+    }
+    if (slashing) { // improve animation later+ this.width/2+this.height/2       + cos(slashAngle) * 40     + sin(slashAngle) * 40
+      push();
+      translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
+      rotate(slashAngle);
+      image(slashImg, 0-this.width - 20, 0-this.height -20, this.width, this.height*2);
+      pop(); //change later
+      
+    }
 
-  //   if (time - shootLastTime > 100) {
-  //     //console.log("1");
-  //     slashing = false;
-  //   }
+    if (time - shootLastTime > 100) {
+      //console.log("1");
+      slashing = false;
+    }
   }
 }
 
