@@ -24,6 +24,7 @@ let screenMoveY = 0;
 
 let time;
 let shootLastTime;
+let range = true;
 
 let floorImg;
 let wallImg;
@@ -31,6 +32,7 @@ let slashImg;
 
 let slashing = false;
 let slashAngle;
+let melee = false;
 
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
@@ -239,11 +241,11 @@ class Player { //player class
   }
 
   shoot() { //good code
-    // if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed) {
-    //   let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
-    //   bulletList.push(playerBullet);
-    //   shootLastTime = time;
-    // }
+    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
+      bulletList.push(playerBullet);
+      shootLastTime = time;
+    }
   }
   slash(){ //problem
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
@@ -253,13 +255,23 @@ class Player { //player class
       shootLastTime = time;
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
     }
-    if (slashing) { // improve animation later+ this.width/2+this.height/2       + cos(slashAngle) * 40     + sin(slashAngle) * 40
+    if (slashing & melee) { //animation
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      rotate(slashAngle);
+      rotate(slashAngle+180 - 40);
       image(slashImg, 0-this.width - 20, 0-this.height -20, this.width, this.height*2);
       pop(); //change later
-      
+
+      for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
+        //console.log("1");
+        if (enemyList[i].x > this.x && enemyList[i].x  < this.x + this.width || enemyList[i].x + enemyList[i].width > this.x && enemyList[i].x + enemyList[i].width < this.x + this.width) {
+          console.log("1");
+          if (enemyList[i].y > this.y && enemyList[i].y < this.y + this.height || enemyList[i].y + enemyList[i].height > this.x && enemyList[i].y < this.y + this.height) {
+            console.log("2");
+            enemyList[i].lives -= 1;
+          }
+        }
+      }
     }
 
     if (time - shootLastTime > 100) {
@@ -517,4 +529,21 @@ function displayData() {
     fill("red");
     rect(50 + playerOne.health*5, 50, 500-playerOne.health*5, 25);
   } 
+}
+
+
+function keyPressed() {
+  if (keyCode === 32) {
+    if (range) {
+      range = false;
+      melee = true;
+      console.log("1");
+    }
+
+    else if (melee) {
+      melee = false;
+      range = true;
+      console.log("2");
+    }
+  }
 }
