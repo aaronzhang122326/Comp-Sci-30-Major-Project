@@ -260,14 +260,16 @@ class Player { //player class
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
       rotate(slashAngle+180 - 40);
       image(slashImg, 0-this.width - 20, 0-this.height -20, this.width, this.height*2);
+      //stroke("red");
+      //rect(0-this.width - 20, 0-this.height -20, this.width, this.height*2);
       pop(); //change later
+      
+      //fill("red");
+      
 
       for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
-        //console.log("1");
-        if (enemyList[i].x > this.x && enemyList[i].x  < this.x + this.width || enemyList[i].x + enemyList[i].width > this.x && enemyList[i].x + enemyList[i].width < this.x + this.width) {
-          console.log("1");
-          if (enemyList[i].y > this.y && enemyList[i].y < this.y + this.height || enemyList[i].y + enemyList[i].height > this.x && enemyList[i].y < this.y + this.height) {
-            console.log("2");
+        if (enemyList[i].x >= this.x && enemyList[i].x  <= this.x + this.width || enemyList[i].x + enemyList[i].width >= this.x && enemyList[i].x + enemyList[i].width <= this.x + this.width) {
+          if (enemyList[i].y >= this.y && enemyList[i].y <= this.y + this.height || enemyList[i].y + enemyList[i].height >= this.x && enemyList[i].y <= this.y + this.height) {
             enemyList[i].lives -= 1;
           }
         }
