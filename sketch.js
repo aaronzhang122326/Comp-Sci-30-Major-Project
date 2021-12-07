@@ -35,8 +35,11 @@ let slashing = false;
 let slashAngle;
 let melee = false;
 
-// melee variables 
-
+// melee variables Library // 
+let ARC_RADIUS;
+let ARC_ANGLE;
+let ROTATION_ANGLE;
+let hit = false;
 
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
@@ -56,6 +59,13 @@ function setup() {
   screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
   shootLastTime = time;
+  
+  // melee variables Library // 
+  angleMode(DEGREES);
+  ARC_RADIUS = cellSize/2;
+  ARC_ANGLE = 90;
+  ROTATION_ANGLE = slashAngle + 300;
+  hit = false;
 }
 
 function draw() {
@@ -93,6 +103,8 @@ function draw() {
   }
 
   displayData();
+
+  console.log(hit);
 }
 
 
@@ -262,26 +274,27 @@ class Player { //player class
     if (slashing & melee) { //animation
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      //rotate(slashAngle+180 - 40);
+      rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
       pop();
+
       push();
-      
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      rotate(180);
-      arc(0, 0, this.width, this.height, 0, 90);
+      rotate(slashAngle + 300);
+      arc(0, 0, this.height+100, this.width+100, 0, 90);
       pop(); //change later
 
-      for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
-        //console.log("1");
-        if (enemyList[i].x > this.x && enemyList[i].x  < this.x + this.width || enemyList[i].x + enemyList[i].width > this.x && enemyList[i].x + enemyList[i].width < this.x + this.width) {
-          console.log("1");
-          if (enemyList[i].y > this.y && enemyList[i].y < this.y + this.height || enemyList[i].y + enemyList[i].height > this.x && enemyList[i].y < this.y + this.height) {
-            console.log("2");
-            enemyList[i].lives -= 1;
-          }
-        }
-      }
+      // for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
+      //   //console.log("1");
+      //   if (enemyList[i].x > this.x && enemyList[i].x  < this.x + this.width || enemyList[i].x + enemyList[i].width > this.x && enemyList[i].x + enemyList[i].width < this.x + this.width) {
+      //     console.log("1");
+      //     if (enemyList[i].y > this.y && enemyList[i].y < this.y + this.height || enemyList[i].y + enemyList[i].height > this.x && enemyList[i].y < this.y + this.height) {
+      //       console.log("2");
+      //       enemyList[i].lives -= 1;
+      //     }
+      //   }
+      // }
+      hit = collidePointArc(mouseX, mouseY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, ARC_RADIUS, ROTATION_ANGLE, ARC_ANGLE);
     }
 
     if (time - shootLastTime > 100) {
