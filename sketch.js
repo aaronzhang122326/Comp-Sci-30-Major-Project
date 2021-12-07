@@ -246,7 +246,7 @@ class Player { //player class
 
   shoot() { //good code
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 3);
+      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 1);
       bulletList.push(playerBullet);
       shootLastTime = time;
     }
