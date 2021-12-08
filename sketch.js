@@ -62,9 +62,9 @@ function setup() {
   
   // melee variables Library // 
   angleMode(DEGREES);
-  ARC_RADIUS = cellSize/2;
+  ARC_RADIUS = 80;
   ARC_ANGLE = 90;
-  ROTATION_ANGLE = slashAngle + 300;
+  ROTATION_ANGLE = 2 * (slashAngle + 300);
   hit = false;
 }
 
