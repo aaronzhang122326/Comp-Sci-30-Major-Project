@@ -65,7 +65,7 @@ function setup() {
   ARC_RADIUS = 80;
   ARC_ANGLE = 90;
   ROTATION_ANGLE = 2 * (slashAngle + 300);
-  hit = false;
+  //hit = false;
 }
 
 function draw() {
@@ -280,8 +280,9 @@ class Player { //player class
 
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      rotate(slashAngle + 300);
-      arc(0, 0, this.height+100, this.width+100, 0, 90);
+      rotate(slashAngle + 345);
+      //arc(0, 0, this.height+100, this.width+100, 0, 90);
+      arc(0, 0, this.height+100, this.width+100, -ARC_ANGLE/2, ARC_ANGLE/2);
       pop(); //change later
 
       // for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
@@ -294,7 +295,7 @@ class Player { //player class
       //     }
       //   }
       // }
-      hit = collidePointArc(mouseX, mouseY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, ARC_RADIUS, ROTATION_ANGLE, ARC_ANGLE);
+      hit = collidePointArc(mouseX, mouseY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE);
     }
 
     if (time - shootLastTime > 100) {
