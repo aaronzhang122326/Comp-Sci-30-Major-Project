@@ -5,6 +5,12 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+//How to check arc rect collison: 
+//1. check Circle collsion (optional)
+//2. check if rect corners are in arc
+//3. check if arc corners are in rect
+
+
 let grid;
 let cellSize = 120;
 let gridSize = 60;
@@ -104,7 +110,10 @@ function draw() {
 
   displayData();
 
-  console.log(hit);
+  //console.log(hit);
+
+  fill("grey");
+  //circle(playerOne.x + screenMoveX + playerOne.width/2, playerOne.y + screenMoveY + playerOne.height/2, 160);
 }
 
 
@@ -295,8 +304,35 @@ class Player { //player class
       //     }
       //   }
       // }
-      hit = collidePointArc(mouseX, mouseY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE);
+      for (let i = 0; i < enemyList.length; i++) {
+        if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
+          if (collideRectCircle(enemyList[i].x + screenMoveX, enemyList[i].y + screenMoveY, enemyList[i].width, enemyList[i].height, this.x + screenMoveX, this.y + screenMoveY, 160)){
+            //console.log("1");
+            if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE)){
+              console.log("1");
+              enemyList[i].lives -= 1;
+            }
+            else if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE)){
+              console.log("2");
+              enemyList[i].lives -= 1;
+            }
+            else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE)) {
+              console.log("3");
+              enemyList[i].lives -= 1;
+            }
+            else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, (this.width+100)/2, slashAngle + 345, ARC_ANGLE)){
+              console.log("4");
+              enemyList[i].lives -= 1;
+            }
+          }
+        }
+      }
     }
+
+
+      
+      
+      
 
     if (time - shootLastTime > 100) {
       //console.log("1");
@@ -561,13 +597,11 @@ function keyPressed() {
     if (range) {
       range = false;
       melee = true;
-      console.log("1");
     }
 
     else if (melee) {
       melee = false;
       range = true;
-      console.log("2");
     }
   }
 }
