@@ -18,6 +18,10 @@ let gridSize = 60;
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
+let playerImgOne;
+let playerImgTwo;
+let walkCount = 0;
+
 let bulletList = [];
 
 let roomList = [];
@@ -51,6 +55,8 @@ function preload() {
   floorImg = loadImage("assets/floorOne.png");
   wallImg = loadImage("assets/wallOne.png");
   slashImg = loadImage("assets/swordSlash.png");
+  playerImgOne = loadImage("assets/player1.png");
+  playerImgTwo = loadImage("assets/player2.png");
 }
 
 function setup() {
@@ -255,14 +261,30 @@ class Player { //player class
     else if (keyIsDown(68) && this.rightFree) {
       this.x += this.speed;
       screenMoveX -= this.speed; 
-      
+    }
+
+    if (keyIsDown(87) || keyIsDown(83) || keyIsDown(65) || keyIsDown(68)) {
+      walkCount += 1;
+    }
+    else {
+      walkCount = 0;
+    }
+
+    if (walkCount > 20) {
+      walkCount = 0;
     }
   }
   display() {
     fill("grey");
     //circle(this.x+this.width/2, this.y+this.width/2, 70);
     fill("red");
-    rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    if (walkCount < 10) {
+      image(playerImgOne, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    }
+    if (walkCount > 10) {
+      image(playerImgTwo, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    }
+    //rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
   shoot() { //good code
@@ -287,12 +309,12 @@ class Player { //player class
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
       pop();
 
-      push();
-      translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      rotate(slashAngle + 345);
+      //push();
+      //translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
+      //rotate(slashAngle + 345);
       //arc(0, 0, this.height+100, this.width+100, 0, 90);
-      arc(0, 0, this.height+100, this.width+100, -ARC_ANGLE/2, ARC_ANGLE/2);
-      pop(); //change later
+      //arc(0, 0, this.height+100, this.width+100, -ARC_ANGLE/2, ARC_ANGLE/2);
+      //pop(); //change later
 
       // for (let i = 0; i < enemyList.length; i++) { // After rotation, does the width and height change
       //   //console.log("1");
