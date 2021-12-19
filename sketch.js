@@ -72,12 +72,12 @@ function setup() {
   time = millis();
   shootLastTime = time;
   
-  // melee variables Library // 
-  angleMode(DEGREES);
-  ARC_RADIUS = 80;
-  ARC_ANGLE = 90;
-  ROTATION_ANGLE = 2 * (slashAngle + 300);
-  //hit = false;
+  // // melee variables Library // 
+  // angleMode(DEGREES);
+  // ARC_RADIUS = 80;
+  // ARC_ANGLE = 90;
+  // ROTATION_ANGLE = 2 * (slashAngle + 300);
+  // //hit = false;
 }
 
 function draw() {
@@ -296,12 +296,14 @@ class Player { //player class
   }
   slash(){ //find arc Center!!!
     let arcRadius = (1000)/2;
+    ARC_ANGLE = 90;
 
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
       angleMode(DEGREES);
       slashing = true;
       shootLastTime = time;
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
+
     }
     if (slashing & melee) { //animation
       push();
@@ -321,24 +323,21 @@ class Player { //player class
 
       for (let i = 0; i < enemyList.length; i++) {
         if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
-          if (collideRectCircle(enemyList[i].x + screenMoveX, enemyList[i].y + screenMoveY, enemyList[i].width, enemyList[i].height, this.x + screenMoveX, this.y + screenMoveY, 160)){
-            //console.log("1");
-            if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-              console.log("1");
-              enemyList[i].lives -= 10;
-            }
-            else if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-              console.log("2");
-              enemyList[i].lives -= 10;
-            }
-            else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
-              console.log("3");
-              enemyList[i].lives -= 10;
-            }
-            else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-              console.log("4");
-              enemyList[i].lives -= 10;
-            }
+          if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+            console.log("1");
+            enemyList[i].lives -= 10;
+          }
+          else if (collidePointArc(enemyList[i].x + screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+            console.log("2");
+            enemyList[i].lives -= 10;
+          }
+          else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
+            console.log("3");
+            enemyList[i].lives -= 10;
+          }
+          else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+            console.log("4");
+            enemyList[i].lives -= 10;
           }
         }
       }
