@@ -102,7 +102,7 @@ function draw() {
     }
   }
 
-  //bullets
+  //bullets splice
   for (let i = 0; i < bulletList.length; i++){
     bulletList[i].move();
     bulletList[i].display();    
@@ -111,6 +111,25 @@ function draw() {
     }
     else if (bulletList[i].hit <= 0) {
       bulletList.splice(i, 1);
+    }
+    else {
+      let topBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) - 1) * cellSize);
+      let bottomBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) + 1) * cellSize);
+      let leftBlock = ((floor(bulletList[i].x/cellSize) - 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
+      let rightBlock = ((floor(bulletList[i].x/cellSize) + 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
+      if (collideRectCircle(topBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        //console.log("1");
+        bulletList.splice(i, 1);
+      }
+      else if (collideRectCircle(bottomBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        bulletList.splice(i, 1);
+      }
+      else if (collideRectCircle(leftBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        bulletList.splice(i, 1);
+      }
+      else if (collideRectCircle(rightBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        bulletList.splice(i, 1);
+      }
     }
   }
 
@@ -183,7 +202,7 @@ class Player { //player class
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
 
-    if (this.positionY <= gridSize-2) { //moving down sanity check //problem
+    if (this.positionY <= gridSize-2) { //moving down sanity check 
       if (grid[this.positionY+1][this.positionX] === 1 && this.y + this.height + this.speed >= (this.positionY+1) * cellSize) {
         this.downFree = false;
       }
@@ -289,13 +308,13 @@ class Player { //player class
 
   shoot() { //good code
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
-      let playerBullet = new Bullet(playerOne.x, playerOne.y, 15, 20, 1);
+      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
       bulletList.push(playerBullet);
       shootLastTime = time;
     }
   }
   slash(){ //find arc Center!!!
-    let arcRadius = (1000)/2;
+    let arcRadius = (this.width+100)/2;
     ARC_ANGLE = 90;
 
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
@@ -310,16 +329,13 @@ class Player { //player class
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
-
-      let arcTip = arcRadius*2
-
       pop();
 
-      push();
-      translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      rotate(slashAngle + 345);
-      arc(0, 0, arcRadius*2, arcRadius*2, -ARC_ANGLE/2, ARC_ANGLE/2);
-      pop(); //change later
+      // push();
+      // translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
+      // rotate(slashAngle + 345);
+      // arc(0, 0, arcRadius*2, arcRadius*2, -ARC_ANGLE/2, ARC_ANGLE/2);
+      // pop(); //change later
 
       for (let i = 0; i < enemyList.length; i++) {
         if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
@@ -342,11 +358,6 @@ class Player { //player class
         }
       }
     }
-
-
-      
-      
-      
 
     if (time - shootLastTime > 100) {
       //console.log("1");
