@@ -113,21 +113,29 @@ function draw() {
       bulletList.splice(i, 1);
     }
     else {
-      let topBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) - 1) * cellSize);
-      let bottomBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) + 1) * cellSize);
-      let leftBlock = ((floor(bulletList[i].x/cellSize) - 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
-      let rightBlock = ((floor(bulletList[i].x/cellSize) + 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
-      if (collideRectCircle(topBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
-        //console.log("1");
+      let blocks = [
+        {x: floor(bulletList[i].x/cellSize) * cellSize, y: (floor(bulletList[i].y/cellSize) - 1) * cellSize},
+        {x: floor(bulletList[i].x/cellSize) * cellSize, y: (floor(bulletList[i].y/cellSize) + 1) * cellSize},
+        {x: (floor(bulletList[i].x/cellSize) - 1) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
+        {x: (floor(bulletList[i].x/cellSize) + 1) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
+      ]
+
+
+      // let topBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) - 1) * cellSize);
+      // let bottomBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) + 1) * cellSize);
+      // let leftBlock = ((floor(bulletList[i].x/cellSize) - 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
+      // let rightBlock = ((floor(bulletList[i].x/cellSize) + 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
+      if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        console.log("1");
         bulletList.splice(i, 1);
       }
-      else if (collideRectCircle(bottomBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+      else if (collideRectCircle(blocks[1].x, blocks[1].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
         bulletList.splice(i, 1);
       }
-      else if (collideRectCircle(leftBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+      else if (collideRectCircle(blocks[2].x, blocks[2].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
         bulletList.splice(i, 1);
       }
-      else if (collideRectCircle(rightBlock, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+      else if (collideRectCircle(blocks[3].x, blocks[3].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
         bulletList.splice(i, 1);
       }
     }
