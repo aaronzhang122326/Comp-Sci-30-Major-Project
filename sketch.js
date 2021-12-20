@@ -5,12 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-//How to check arc rect collison: 
-//1. check Circle collsion (optional)
-//2. check if rect corners are in arc
-//3. check if arc corners are in rect
-
-
 let grid;
 let cellSize = 120;
 let gridSize = 60;
@@ -23,12 +17,14 @@ let playerImgTwo;
 let walkCount = 0;
 
 let bulletList = [];
+let enemyBulletList = [];
 
 let roomList = [];
 let roomNumber;
 let iCount = 0;
 
-let enemyList = [];
+let minionList = [];
+let archerList = [];
 
 let screenMoveX = 0;
 let screenMoveY = 0;
@@ -45,12 +41,6 @@ let slashing = false;
 let slashAngle;
 let melee = false;
 
-// melee variables Library // 
-let ARC_RADIUS;
-let ARC_ANGLE;
-let ROTATION_ANGLE;
-let hit = false;
-
 function preload() {
   floorImg = loadImage("assets/floorOne.png");
   wallImg = loadImage("assets/wallOne.png");
@@ -63,7 +53,6 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   grid = create2DArray(gridSize, gridSize);
   generateDungeon();
-  //generateRoom(); //change later
   spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 10, 250, 100);
   spawnEnemies();
@@ -71,20 +60,14 @@ function setup() {
   screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
   shootLastTime = time;
-  
-  // // melee variables Library // 
-  // angleMode(DEGREES);
-  // ARC_RADIUS = 80;
-  // ARC_ANGLE = 90;
-  // ROTATION_ANGLE = 2 * (slashAngle + 300);
-  // //hit = false;
+  // let minion = new Enemy(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
+  // minionList.push(minion);
 }
 
 function draw() {
   background(220);
   displayGrid(gridSize, gridSize); 
   time = millis();
-  //console.log(playerOne.health);
 
   //player movement
   playerOne.move();
@@ -92,13 +75,21 @@ function draw() {
   playerOne.slash();
   playerOne.display();
 
+  //minion movement
+  for (let i = 0; i < minionList.length; i++) {
+    minionList[i].move();
+    minionList[i].display();
+    if (minionList[i].lives <= 0) {
+      minionList.splice(i, 1);
+    }
+  }
 
-  //enemy movement
-  for (let i = 0; i < enemyList.length; i++) {
-    enemyList[i].move();
-    enemyList[i].display();
-    if (enemyList[i].lives <= 0) {
-      enemyList.splice(i, 1);
+  //archer movement
+  for (let i = 0; i < archerList.length; i++) {
+    archerList[i].move();
+    archerList[i].display();
+    if (archerList[i].lives <= 0) {
+      archerList.splice(i, 1);
     }
   }
 
@@ -123,17 +114,29 @@ function draw() {
       }
     }
   }
-
+    //bullets splice
+  for (let i = 0; i < enemyBulletList.length; i++){
+    enemyBulletList[i].move();
+    enemyBulletList[i].display();    
+    if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
+      enemyBulletList.splice(i, 1);
+    }
+    else if (enemyBulletList[i].hit <= 0) {
+      enemyBulletList.splice(i, 1);
+    }
+    else {
+      let blocks = [
+        {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
+      ]
+      if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] !== 2){
+        if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
+          enemyBulletList.splice(i, 1);
+        }
+      }
+    }
+  }
   displayData();
-
-  //console.log(hit);
-
-  fill("grey");
-  //circle(playerOne.x + screenMoveX + playerOne.width/2, playerOne.y + screenMoveY + playerOne.height/2, 160);
 }
-
-
-
 
 //creating and displaying grid
 function create2DArray(row, col) {
@@ -155,14 +158,10 @@ function displayGrid(col, row) {
       }
       if (grid[y][x] === 1) { //wall
         image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
-        //fill("blue");
       }
       if (grid[y][x] === 2) { //interior
-        //fill("white");
         image(floorImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
-        //rect(x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
-      
     }
   }
 }
@@ -180,80 +179,11 @@ class Player { //player class
     this.downFree;
     this.shootSpeed = shootSpeed;
     this.health = health;
-
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
   }
   move() {
-    this.rightFree = true;
-    this.leftFree = true;
-    this.upFree = true;
-    this.downFree = true;
-
-    this.positionY = floor(this.y/cellSize);
-    this.positionX = floor(this.x/cellSize);
-
-    if (this.positionY <= gridSize-2) { //moving down sanity check 
-      if (grid[this.positionY+1][this.positionX] === 1 && this.y + this.height + this.speed >= (this.positionY+1) * cellSize) {
-        this.downFree = false;
-      }
-      if (grid[this.positionY+1][this.positionX+1] === 1 && this.y + this.height + this.speed >= (this.positionY+1) * cellSize && this.x + this.width >= (this.positionX+1) * cellSize) {
-        this.downFree = false;
-      }
-    }
-
-    if (this.positionY >= 1) {//moving up sanity check
-      if (grid[this.positionY-1][this.positionX] === 1 && this.y - this.speed <= (this.positionY) * cellSize) {
-        this.upFree = false;
-      }
-      if (grid[this.positionY-1][this.positionX+1] === 1 && this.y - this.speed <= (this.positionY) * cellSize && this.x + this.width >= (this.positionX+1) * cellSize) {
-        this.upFree = false;
-      }
-    }
-
-    
-    if (this.positionX <= gridSize-2) {//moving right sanity check
-      if (this.positionY >= 1) {
-        if (grid[this.positionY][this.positionX+1] === 1 && this.x + this.width + this.speed >= (this.positionX+1) * cellSize) {
-          this.rightFree = false;
-        }
-      }
-      if (this.positionY <= gridSize-2) {
-        if (grid[this.positionY+1][this.positionX+1] === 1 && this.x + this.width + this.speed >= (this.positionX+1) * cellSize && this.y + this.height >= (this.positionY+1) * cellSize) {
-          if (this.y + this.height >= (this.positionY+1) * cellSize) {
-            this.rightFree = false;
-          } 
-        }
-      }
-    }
-
-    if (this.positionX >= 1) {//moving left sanity check
-      if (this.positionY >= 1) {
-        if (grid[this.positionY][this.positionX-1] === 1 && this.x - this.speed <= (this.positionX) * cellSize) {
-          this.leftFree = false;
-        }
-      }
-      if (this.positionY <= gridSize-2) {
-        if (grid[this.positionY+1][this.positionX-1] === 1 && this.x - this.speed <= (this.positionX) * cellSize) {
-          if (this.y + this.height >= (this.positionY+1) * cellSize) {
-            this.leftFree = false;
-          }
-        }
-      }
-    }
-
-    if (this.x + this.width + this.speed >= gridSize * cellSize) {
-      this.rightFree = false;
-    }
-    if (this.x + this.speed <= 0) {
-      this.leftFree = false;
-    }
-    if (this.y + this.height + this.speed >= gridSize * cellSize) {
-      this.downFree = false;
-    }
-    if (this.y + this.speed <= 0) {
-      this.upFree = false;
-    }
+    movementCheck(this);
 
     if (keyIsDown(87) && this.upFree) {
       this.y -= this.speed;
@@ -285,28 +215,26 @@ class Player { //player class
     }
   }
   display() {
-    fill("grey");
-    //circle(this.x+this.width/2, this.y+this.width/2, 70);
-    fill("red");
     if (walkCount < 10) {
       //image(playerImgOne, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
     }
     if (walkCount > 10) {
       //image(playerImgTwo, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
     }
+    fill("red");
     rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
-  shoot() { //good code
+  shoot() { 
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
       let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
       bulletList.push(playerBullet);
       shootLastTime = time;
     }
   }
-  slash(){ //find arc Center!!!
+  slash(){ 
     let arcRadius = (this.width+100)/2;
-    ARC_ANGLE = 90;
+    let ARC_ANGLE = 90;
 
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
       angleMode(DEGREES);
@@ -315,7 +243,7 @@ class Player { //player class
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
 
     }
-    if (slashing & melee) { //animation
+    if (slashing & melee) {
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
       rotate(slashAngle+180 - 40);
@@ -328,30 +256,29 @@ class Player { //player class
       // arc(0, 0, arcRadius*2, arcRadius*2, -ARC_ANGLE/2, ARC_ANGLE/2);
       // pop(); //change later
 
-      for (let i = 0; i < enemyList.length; i++) {
+      for (let i = 0; i < minionList.length; i++) {
         if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
-          if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+          if (collidePointArc(minionList[i].x+ screenMoveX, minionList[i].y+ screenMoveY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
             console.log("1");
-            enemyList[i].lives -= 10;
+            minionList[i].lives -= 10;
           }
-          else if (collidePointArc(enemyList[i].x + screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+          else if (collidePointArc(minionList[i].x + screenMoveX, minionList[i].y + minionList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
             console.log("2");
-            enemyList[i].lives -= 10;
+            minionList[i].lives -= 10;
           }
-          else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
+          else if (collidePointArc(minionList[i].x + minionList[i].width+ screenMoveX, minionList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
             console.log("3");
-            enemyList[i].lives -= 10;
+            minionList[i].lives -= 10;
           }
-          else if (collidePointArc(enemyList[i].x + enemyList[i].width+ screenMoveX, enemyList[i].y + enemyList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+          else if (collidePointArc(minionList[i].x + minionList[i].width+ screenMoveX, minionList[i].y + minionList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
             console.log("4");
-            enemyList[i].lives -= 10;
+            minionList[i].lives -= 10;
           }
         }
       }
     }
 
     if (time - shootLastTime > 100) {
-      //console.log("1");
       slashing = false;
     }
   }
@@ -371,21 +298,36 @@ class Bullet {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
 
-    for (let i = 0; i < enemyList.length; i++){//problem
-      if (this.x > enemyList[i].x && this.x < enemyList[i].x + enemyList[i].width && this.y > enemyList[i].y && this.y < enemyList[i].y + enemyList[i].height){
+    for (let i = 0; i < minionList.length; i++){//problem
+      if (this.x > minionList[i].x && this.x < minionList[i].x + minionList[i].width && this.y > minionList[i].y && this.y < minionList[i].y + minionList[i].height){
         this.hit -= 1;
-        enemyList[i].lives -=1;
+        minionList[i].lives -=1;
       }
     }
   }
   display() {
-    //console.log(this.x);
     fill("red");
     circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
   }
 }
 
-class Enemy {
+class EnemyBullet extends Bullet {
+  constructor(x, y, radius, speed, hit) {
+    super(x, y, radius, speed, hit);
+    this.disX = this.x - (playerOne.x-playerOne.width/2 + screenMoveX);
+    this.disY = this.y - (playerOne.y-playerOne.height/2 + screenMoveY);
+  }
+  move() {
+    this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+    this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+  }
+  display() {
+    fill("green");
+    circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
+  }
+}
+
+class Minions {
   constructor(x, y, width, height, speed, lives) {
     this.x = x;
     this.y = y;
@@ -394,19 +336,24 @@ class Enemy {
     this.speed = speed;
     this.lives = lives;
     this.attackLastTime = 0;
+    this.rightFree = true;
+    this.leftFree = true;
+    this.upFree = true;
+    this.downFree = true;
   }
   move() {
-    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
-      if (this.x < playerOne.x) {
+    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10) {
+      movementCheck(this);
+      if (this.x < playerOne.x && this.rightFree) {
         this.x += this.speed;
       }
-      else if (this.x > playerOne.x) {
+      else if (this.x > playerOne.x && this.leftFree) {
         this.x -= this.speed;
       }
-      if (this.y < playerOne.y) {
+      if (this.y < playerOne.y && this.downFree) {
         this.y += this.speed;
       }
-      else if (this.y > playerOne.y) {
+      else if (this.y > playerOne.y && this.upFree) {
         this.y -= this.speed;
       }
     } 
@@ -443,13 +390,42 @@ class Enemy {
       this.attackLastTime = time;
     }
   }
-    
-  //   if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width || this.x + width < playerOne.x && this.x < playerOne.x + playerOne.width )
-  // }
 
   display() {
     fill("green");
     rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+  }
+}
+
+class Archers extends Minions {
+  constructor(x, y, width, height, speed, lives) {
+    super(x, y, width, height, speed, lives);
+    this.x = x;
+    this.y = y;
+  }
+  move() {
+    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
+      movementCheck(this);
+      if (this.x < playerOne.x && this.rightFree) {
+        this.x += this.speed;
+      }
+      else if (this.x > playerOne.x && this.leftFree) {
+        this.x -= this.speed;
+      }
+      if (this.y < playerOne.y && this.downFree) {
+        this.y += this.speed;
+      }
+      else if (this.y > playerOne.y && this.upFree) {
+        this.y -= this.speed;
+      }
+    } 
+    else if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10){
+      this.shoot();
+    }
+  }
+  shoot() {
+    let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 30, 1);
+    enemyBulletList.push(enemyBullet);
   }
 }
 
@@ -465,12 +441,6 @@ function generateRoom(locX, locY) {
   for (let y = locationY; y <= locationY + roomHeight; y++) {//walls
     for (let x = locationX; x <= locationX + roomWidth; x++){
       grid[y][x] = 1;
-    }
-  }
-
-  for (let y = locationY+1; y <= locationY + roomHeight-1; y++) {//interior
-    for (let x = locationX+1; x <= locationX + roomWidth-1; x++){
-      //grid[y][x] = 2;
     }
   }
 }
@@ -491,23 +461,20 @@ function generateInterior(){
         interior = false;
         grid[y][x-1] = 1;
       }
-
-      //grid[y][x] = 2;
     }
   }
 } 
 
 function generateBridge() {
-
   if (roomList[iCount-1][1] > roomList[iCount][1]){ //building up
-    for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {//poss prob
+    for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
       }
     }
   }
   else if (roomList[iCount][1] > roomList[iCount-1][1]) { //building down
-    for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]+3; y++) {//x < roomList[i+1][0] - roomList[i][0]
+    for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]+3; y++) {
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
       }
@@ -533,7 +500,6 @@ function generateBridge() {
 
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
-
   for (let i = 0; i < roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
@@ -542,8 +508,6 @@ function generateDungeon() {
     iCount += 1;
   }
   generateInterior();
-
-
 
   for (let i = 0; i < 3; i++) {
     for (let y = 0; y < gridSize; y++) {
@@ -571,7 +535,7 @@ function generateDungeon() {
   }
 } 
 
-function spawnLocation(objectX, objectY) { //edit later
+function spawnLocation(objectX, objectY) { 
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       if (grid[y][x] === 2) {
@@ -591,9 +555,13 @@ function spawnEnemies() {
         }
       }
     }
-    for (let a = 0; a < round(spaceCount/5); a++) {
-      let minion = new Enemy(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
-      enemyList.push(minion);
+    for (let a = 0; a < round(spaceCount/10); a++) {
+      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
+      minionList.push(minion);
+    }
+    for (let a = 0; a < round(spaceCount/10); a++) {
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
+      archerList.push(archer);
     }
   }  
 }
@@ -607,6 +575,73 @@ function displayData() {
   } 
 }
 
+function movementCheck(object){
+
+  object.rightFree = true;
+  object.leftFree = true;
+  object.upFree = true;
+  object.downFree = true;
+
+  object.positionY = floor(object.y/cellSize);
+  object.positionX = floor(object.x/cellSize);
+
+  if (object.positionY <= gridSize-2) { //moving down sanity check 
+    if (grid[object.positionY+1][object.positionX] === 1 && object.y + object.height + object.speed >= (object.positionY+1) * cellSize) {
+      //console.log("1");
+      object.downFree = false;
+    }
+    if (grid[object.positionY+1][object.positionX+1] === 1 && object.y + object.height + object.speed >= (object.positionY+1) * cellSize && object.x + object.width >= (object.positionX+1) * cellSize) {
+      //console.log("1");
+      object.downFree = false;
+    }
+  }
+
+  if (object.positionY >= 1) {//moving up sanity check
+    if (grid[object.positionY-1][object.positionX] === 1 && object.y - object.speed <= (object.positionY) * cellSize) {
+      //console.log("2");
+      object.upFree = false;
+    }
+    if (grid[object.positionY-1][object.positionX+1] === 1 && object.y - object.speed <= (object.positionY) * cellSize && object.x + object.width >= (object.positionX+1) * cellSize) {
+      //console.log("2");
+      object.upFree = false;
+    }
+  }
+
+  
+  if (object.positionX <= gridSize-2) {//moving right sanity check
+    if (object.positionY >= 1) {
+      if (grid[object.positionY][object.positionX+1] === 1 && object.x + object.width + object.speed >= (object.positionX+1) * cellSize) {
+        //console.log("3");
+        object.rightFree = false;
+      }
+    }
+    if (object.positionY <= gridSize-2) {
+      if (grid[object.positionY+1][object.positionX+1] === 1 && object.x + object.width + object.speed >= (object.positionX+1) * cellSize && object.y + object.height >= (object.positionY+1) * cellSize) {
+        if (object.y + object.height >= (object.positionY+1) * cellSize) {
+          //console.log("3");
+          object.rightFree = false;
+        } 
+      }
+    }
+  }
+
+  if (object.positionX >= 1) {//moving left sanity check
+    if (object.positionY >= 1) {
+      if (grid[object.positionY][object.positionX-1] === 1 && object.x - object.speed <= (object.positionX) * cellSize) {
+        //console.log("4");
+        object.leftFree = false;
+      }
+    }
+    if (object.positionY <= gridSize-2) {
+      if (grid[object.positionY+1][object.positionX-1] === 1 && object.x - object.speed <= (object.positionX) * cellSize) {
+        if (object.y + object.height >= (object.positionY+1) * cellSize) {
+          //console.log("4");
+          object.leftFree = false;
+        }
+      }
+    }
+  }
+}
 
 function keyPressed() {
   if (keyCode === 32) {
