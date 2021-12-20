@@ -126,6 +126,7 @@ function draw() {
       // let leftBlock = ((floor(bulletList[i].x/cellSize) - 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
       // let rightBlock = ((floor(bulletList[i].x/cellSize) + 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
       if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        rect(blocks[0].x+screenMoveX, blocks[0].y+screenMoveY, cellSize, cellSize);
         console.log("1");
         bulletList.splice(i, 1);
       }
@@ -133,6 +134,7 @@ function draw() {
         bulletList.splice(i, 1);
       }
       else if (collideRectCircle(blocks[2].x, blocks[2].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
+        rect(blocks[2].x+screenMoveX, blocks[2].y+screenMoveY, cellSize, cellSize);
         bulletList.splice(i, 1);
       }
       else if (collideRectCircle(blocks[3].x, blocks[3].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
@@ -316,7 +318,7 @@ class Player { //player class
 
   shoot() { //good code
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
-      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
+      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 1, 1);
       bulletList.push(playerBullet);
       shootLastTime = time;
     }
