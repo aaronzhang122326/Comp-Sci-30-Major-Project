@@ -114,31 +114,12 @@ function draw() {
     }
     else {
       let blocks = [
-        {x: floor(bulletList[i].x/cellSize) * cellSize, y: (floor(bulletList[i].y/cellSize) - 1) * cellSize},
-        {x: floor(bulletList[i].x/cellSize) * cellSize, y: (floor(bulletList[i].y/cellSize) + 1) * cellSize},
-        {x: (floor(bulletList[i].x/cellSize) - 1) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
-        {x: (floor(bulletList[i].x/cellSize) + 1) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
+        {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
       ]
-
-
-      // let topBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) - 1) * cellSize);
-      // let bottomBlock = (floor(bulletList[i].x/cellSize) * cellSize, (floor(bulletList[i].y/cellSize) + 1) * cellSize);
-      // let leftBlock = ((floor(bulletList[i].x/cellSize) - 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
-      // let rightBlock = ((floor(bulletList[i].x/cellSize) + 1) * cellSize, floor(bulletList[i].y/cellSize) * cellSize);
-      if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
-        rect(blocks[0].x+screenMoveX, blocks[0].y+screenMoveY, cellSize, cellSize);
-        console.log("1");
-        bulletList.splice(i, 1);
-      }
-      else if (collideRectCircle(blocks[1].x, blocks[1].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
-        bulletList.splice(i, 1);
-      }
-      else if (collideRectCircle(blocks[2].x, blocks[2].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
-        rect(blocks[2].x+screenMoveX, blocks[2].y+screenMoveY, cellSize, cellSize);
-        bulletList.splice(i, 1);
-      }
-      else if (collideRectCircle(blocks[3].x, blocks[3].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){//check for collision
-        bulletList.splice(i, 1);
+      if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] !== 2){
+        if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
+          bulletList.splice(i, 1);
+        }
       }
     }
   }
@@ -318,7 +299,7 @@ class Player { //player class
 
   shoot() { //good code
     if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
-      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 1, 1);
+      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
       bulletList.push(playerBullet);
       shootLastTime = time;
     }
@@ -349,7 +330,7 @@ class Player { //player class
 
       for (let i = 0; i < enemyList.length; i++) {
         if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
-          if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+          if (collidePointArc(enemyList[i].x+ screenMoveX, enemyList[i].y+ screenMoveY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
             console.log("1");
             enemyList[i].lives -= 10;
           }
@@ -383,8 +364,8 @@ class Bullet {
     this.radius = radius;
     this.speed = speed;
     this.hit = hit;
-    this.disX = mouseX - screenMoveX - playerOne.x;
-    this.disY = mouseY - screenMoveY - playerOne.y;
+    this.disX = mouseX - screenMoveX - playerOne.x-playerOne.width/2;
+    this.disY = mouseY - screenMoveY - playerOne.y-playerOne.height/2;
   }
   move() {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -398,7 +379,7 @@ class Bullet {
     }
   }
   display() {
-    //console.log("2");
+    //console.log(this.x);
     fill("red");
     circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
   }
