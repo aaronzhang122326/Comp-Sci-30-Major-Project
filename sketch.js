@@ -30,7 +30,8 @@ let screenMoveX = 0;
 let screenMoveY = 0;
 
 let time;
-let shootLastTime;
+let playerShootLastTime;
+let enemyShootLastTime;
 let range = true;
 
 let floorImg;
@@ -59,7 +60,8 @@ function setup() {
   screenMoveX -= round(width/2+(playerOne.x-width));
   screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
-  shootLastTime = time;
+  playerShootLastTime = time;
+  enemyShootLastTime = time;
   // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
   // archerList.push(archer);
 }
@@ -226,20 +228,17 @@ class Player { //player class
   }
 
   shoot() { 
-    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && range) {
+    if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range) {
       let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
       bulletList.push(playerBullet);
-      shootLastTime = time;
+      playerShootLastTime = time;
     }
   }
   slash(){ 
-    let arcRadius = (this.width+100)/2;
-    let ARC_ANGLE = 90;
-
-    if (mouseIsPressed &&  time - shootLastTime > this.shootSpeed && slashing === false) {
+    if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && slashing === false) {
       angleMode(DEGREES);
       slashing = true;
-      shootLastTime = time;
+      playerShootLastTime = time;
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
 
     }
@@ -255,30 +254,11 @@ class Player { //player class
       // rotate(slashAngle + 345);
       // arc(0, 0, arcRadius*2, arcRadius*2, -ARC_ANGLE/2, ARC_ANGLE/2);
       // pop(); //change later
-
-      for (let i = 0; i < minionList.length; i++) {
-        if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *3) {
-          if (collidePointArc(minionList[i].x+ screenMoveX, minionList[i].y+ screenMoveY, this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-            console.log("1");
-            minionList[i].lives -= 10;
-          }
-          else if (collidePointArc(minionList[i].x + screenMoveX, minionList[i].y + minionList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-            console.log("2");
-            minionList[i].lives -= 10;
-          }
-          else if (collidePointArc(minionList[i].x + minionList[i].width+ screenMoveX, minionList[i].y+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
-            console.log("3");
-            minionList[i].lives -= 10;
-          }
-          else if (collidePointArc(minionList[i].x + minionList[i].width+ screenMoveX, minionList[i].y + minionList[i].height+ screenMoveY , this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-            console.log("4");
-            minionList[i].lives -= 10;
-          }
-        }
-      }
+      slashcollision(this, minionList);
+      slashcollision(this, archerList);
     }
 
-    if (time - shootLastTime > 100) {
+    if (time - playerShootLastTime > 100) {
       slashing = false;
     }
   }
@@ -298,10 +278,19 @@ class Bullet {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
 
-    for (let i = 0; i < minionList.length; i++){//problem
+    //bullet minion detection
+    for (let i = 0; i < minionList.length; i++){
       if (this.x > minionList[i].x && this.x < minionList[i].x + minionList[i].width && this.y > minionList[i].y && this.y < minionList[i].y + minionList[i].height){
         this.hit -= 1;
         minionList[i].lives -=1;
+      }
+    }
+
+    //bullet archer detection
+    for (let i = 0; i < archerList.length; i++){
+      if (this.x > archerList[i].x && this.x < archerList[i].x + archerList[i].width && this.y > archerList[i].y && this.y < archerList[i].y + archerList[i].height){
+        this.hit -= 1;
+        archerList[i].lives -=1;
       }
     }
   }
@@ -320,6 +309,11 @@ class EnemyBullet extends Bullet {
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y -= this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+
+    if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width && this.y > playerOne.y && this.y < playerOne.y + playerOne.height){
+      this.hit -= 1;
+      playerOne.health -= 5;
+    }
   }
   display() {
     fill("green");
@@ -398,11 +392,12 @@ class Minions {
 }
 
 class Archers extends Minions {
-  constructor(x, y, width, height, speed, lives, time) {
+  constructor(x, y, width, height, speed, lives, shootSpeed, ShootLastTime) {
     super(x, y, width, height, speed, lives);
     this.x = x;
     this.y = y;
-    this.shootLastTime = time;
+    this.shootSpeed = shootSpeed;
+    this.enemyShootLastTime = ShootLastTime;
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
@@ -425,10 +420,10 @@ class Archers extends Minions {
     }
   }
   shoot() {    
-    if (time - this.shootLastTime > this.shootSpeed && range) {
-      let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 30, 1);
+    if (time - this.enemyShootLastTime > this.shootSpeed) {
+      let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1);
       enemyBulletList.push(enemyBullet);
-      this.shootLastTime = time;
+      this.enemyShootLastTime = time;
     }
   }
 }
@@ -564,7 +559,7 @@ function spawnEnemies() {
       minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, time);
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, 1000, 0);//enemyShootLastTime
       archerList.push(archer);
     }
   }  
@@ -642,6 +637,32 @@ function movementCheck(object){
           //console.log("4");
           object.leftFree = false;
         }
+      }
+    }
+  }
+}
+
+function slashcollision(slasher, target) {
+  let arcRadius = (slasher.width+100)/2;
+  let ARC_ANGLE = 90;
+
+  for (let i = 0; i < target.length; i++) {
+    if (sqrt(sq(slasher.x - slasher.x) + sq(slasher.y - slasher.y)) < cellSize *3) {
+      if (collidePointArc(target[i].x+ screenMoveX, target[i].y+ screenMoveY, slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+        //console.log("1");
+        target[i].lives -= 10;
+      }
+      else if (collidePointArc(target[i].x + screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+        //console.log("2");
+        target[i].lives -= 10;
+      }
+      else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
+        //console.log("3");
+        target[i].lives -= 10;
+      }
+      else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
+        //console.log("4");
+        target[i].lives -= 10;
       }
     }
   }
