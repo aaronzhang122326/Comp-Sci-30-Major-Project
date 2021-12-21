@@ -60,8 +60,8 @@ function setup() {
   screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
   shootLastTime = time;
-  // let minion = new Enemy(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
-  // minionList.push(minion);
+  // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
+  // archerList.push(archer);
 }
 
 function draw() {
@@ -314,12 +314,12 @@ class Bullet {
 class EnemyBullet extends Bullet {
   constructor(x, y, radius, speed, hit) {
     super(x, y, radius, speed, hit);
-    this.disX = this.x - (playerOne.x-playerOne.width/2 + screenMoveX);
-    this.disY = this.y - (playerOne.y-playerOne.height/2 + screenMoveY);
+    this.disX = this.x - playerOne.x-playerOne.width/2;
+    this.disY = this.y - playerOne.y-playerOne.height/2;
   }
   move() {
-    this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
-    this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+    this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
+    this.y -= this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
   }
   display() {
     fill("green");
@@ -398,10 +398,11 @@ class Minions {
 }
 
 class Archers extends Minions {
-  constructor(x, y, width, height, speed, lives) {
+  constructor(x, y, width, height, speed, lives, time) {
     super(x, y, width, height, speed, lives);
     this.x = x;
     this.y = y;
+    this.shootLastTime = time;
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
@@ -423,9 +424,12 @@ class Archers extends Minions {
       this.shoot();
     }
   }
-  shoot() {
-    let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 30, 1);
-    enemyBulletList.push(enemyBullet);
+  shoot() {    
+    if (time - this.shootLastTime > this.shootSpeed && range) {
+      let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 30, 1);
+      enemyBulletList.push(enemyBullet);
+      this.shootLastTime = time;
+    }
   }
 }
 
@@ -560,7 +564,7 @@ function spawnEnemies() {
       minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, time);
       archerList.push(archer);
     }
   }  
