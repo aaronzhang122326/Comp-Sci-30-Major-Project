@@ -23,6 +23,8 @@ let playerLTwo;
 let playerLThree;
 let playerLFour;
 
+let playerData;
+
 let playerImgList;
 let playeImgPositionList;
 
@@ -68,6 +70,8 @@ function preload() {
   playerLTwo = loadImage("assets/player_sprite_6.png");
   playerLThree = loadImage("assets/player_sprite_7.png");
   playerLFour = loadImage("assets/player_sprite_8.png");
+
+  playerData = loadImage("assets/health setting.PNG");
 }
 
 function setup() {
@@ -604,11 +608,13 @@ function spawnEnemies() {
 }
 
 function displayData() {
+  image(playerData, 50, 50, 165*1.25, 76*1.25);
   if (playerOne.health >= 0) {
     fill("green");
     rect(50, 50, playerOne.health* 5, 25);
     fill("red");
     rect(50 + playerOne.health*5, 50, 500-playerOne.health*5, 25);
+  
   } 
 }
 
@@ -718,4 +724,8 @@ function keyPressed() {
       range = true;
     }
   }
+}
+
+function mousePressed(){
+  console.log(mouseX, mouseY);
 }
