@@ -23,6 +23,9 @@ let playerLTwo;
 let playerLThree;
 let playerLFour;
 
+let playerImgList;
+let playeImgPositionList;
+
 let walkCount = 0;
 
 let bulletList = [];
@@ -72,7 +75,15 @@ function setup() {
   grid = create2DArray(gridSize, gridSize);
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/2, cellSize/2, 10, 250, 100);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 250, 100);
+
+  playerImgList = [
+    [playerLOne, playerLTwo, playerLThree, playerLFour],
+    [playerROne, playerRTwo, playerRThree, playerRFour],
+  ];
+
+  playerImgPositionList = [0, 7, 7, 0];
+
   spawnEnemies();
   screenMoveX -= round(width/2+(playerOne.x-width));
   screenMoveY -= round(height/2+(playerOne.y-height));
@@ -155,6 +166,9 @@ function draw() {
     }
   }
   displayData();
+
+  //console.log(playerOne.walkCount/5);
+  console.log(playerOne.walkcount/5);
 }
 
 //creating and displaying grid
@@ -200,6 +214,9 @@ class Player { //player class
     this.health = health;
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
+    this.facingRight = true;
+    this.facingLeft = false;
+    this.walkcount = 0;
   }
   move() {
     movementCheck(this);
@@ -216,32 +233,37 @@ class Player { //player class
     if (keyIsDown(65) && this.leftFree) {
       this.x -= this.speed;
       screenMoveX += this.speed; 
+      this.facingRight = false;
+      this.facingLeft = true;
     }
     else if (keyIsDown(68) && this.rightFree) {
       this.x += this.speed;
       screenMoveX -= this.speed; 
+      this.facingRight = true;
+      this.facingLeft = false;
     }
 
     if (keyIsDown(87) || keyIsDown(83) || keyIsDown(65) || keyIsDown(68)) {
-      walkCount += 1;
+      this.walkCount += 1;
     }
     else {
-      walkCount = 0;
+      this.walkCount = 0;
     }
 
-    if (walkCount > 20) {
-      walkCount = 0;
+    if (this.walkCount >= 20) {
+      this.walkCount = 0;
     }
   }
   display() {
-    if (walkCount < 10) {
-      //image(playerImgOne, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    if (this.facingLeft) {
+      image(playerImgList[0][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
-    if (walkCount > 10) {
-      //image(playerImgTwo, this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    if (this.facingRight) {
+      image(playerImgList[1][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
-    fill("red");
-    rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
+    
+    //fill("red");
+    //rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
   shoot() { 
@@ -257,7 +279,6 @@ class Player { //player class
       slashing = true;
       playerShootLastTime = time;
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
-
     }
     if (slashing & melee) {
       push();
