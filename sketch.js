@@ -12,8 +12,17 @@ let gridSize = 60;
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
-let playerImgOne;
-let playerImgTwo;
+
+let playerROne;
+let playerRTwo;
+let playerRThree;
+let playerRFour;
+
+let playerLOne;
+let playerLTwo;
+let playerLThree;
+let playerLFour;
+
 let walkCount = 0;
 
 let bulletList = [];
@@ -46,8 +55,16 @@ function preload() {
   floorImg = loadImage("assets/floorOne.png");
   wallImg = loadImage("assets/wallOne.png");
   slashImg = loadImage("assets/swordSlash.png");
-  playerImgOne = loadImage("assets/player1.png");
-  playerImgTwo = loadImage("assets/player2.png");
+
+  playerROne = loadImage("assets/player_sprite.png");
+  playerRTwo = loadImage("assets/player_sprite_2.png");
+  playerRThree = loadImage("assets/player_sprite_3.png");
+  playerRFour = loadImage("assets/player_sprite_4.png");
+
+  playerLOne = loadImage("assets/player_sprite_5.png");
+  playerLTwo = loadImage("assets/player_sprite_6.png");
+  playerLThree = loadImage("assets/player_sprite_7.png");
+  playerLFour = loadImage("assets/player_sprite_8.png");
 }
 
 function setup() {
