@@ -23,6 +23,8 @@ let playerLTwo;
 let playerLThree;
 let playerLFour;
 
+let weapon;
+
 let playerData;
 
 let playerImgList;
@@ -70,6 +72,8 @@ function preload() {
   playerLTwo = loadImage("assets/player_sprite_6.png");
   playerLThree = loadImage("assets/player_sprite_7.png");
   playerLFour = loadImage("assets/player_sprite_8.png");
+
+  weapon = loadImage("assets/weapon_1.png");
 
   playerData = loadImage("assets/health setting.PNG");
 }
@@ -265,6 +269,13 @@ class Player { //player class
     if (this.facingRight) {
       image(playerImgList[1][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
+    let angle = 180* atan((mouseY-(this.height/2+this.y-screenMoveY))/(mouseX-(this.width/2+this.x-screenMoveY)))/PI;
+    push();
+    translate(this.x+this.width/2+screenMoveX, this.y+this.height/2+screenMoveY);
+    rotate(angle);
+    image(weapon, -this.width/6, -this.height/6, this.width/3, this.height/3);
+    pop();
+
     
     //fill("red");
     //rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
@@ -687,6 +698,7 @@ function movementCheck(object){
 }
 
 function slashcollision(slasher, target) {
+  angleMode(DEGREES);
   let arcRadius = (slasher.width+100)/2;
   let ARC_ANGLE = 90;
 
