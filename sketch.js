@@ -241,14 +241,23 @@ class Player { //player class
     if (keyIsDown(65) && this.leftFree) {
       this.x -= this.speed;
       screenMoveX += this.speed; 
-      this.facingRight = false;
-      this.facingLeft = true;
+      // this.facingRight = false;
+      // this.facingLeft = true;
     }
     else if (keyIsDown(68) && this.rightFree) {
       this.x += this.speed;
       screenMoveX -= this.speed; 
+      // this.facingRight = true;
+      // this.facingLeft = false;
+    }
+
+    if (mouseX >= this.x + screenMoveX){
       this.facingRight = true;
       this.facingLeft = false;
+    }
+    else {
+      this.facingRight = false;
+      this.facingLeft = true;
     }
 
     if (keyIsDown(87) || keyIsDown(83) || keyIsDown(65) || keyIsDown(68)) {
@@ -269,11 +278,12 @@ class Player { //player class
     if (this.facingRight) {
       image(playerImgList[1][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
-    let angle = 180* atan((mouseY-(this.height/2+this.y-screenMoveY))/(mouseX-(this.width/2+this.x-screenMoveY)))/PI;
+    angleMode(DEGREES);
     push();
-    translate(this.x+this.width/2+screenMoveX, this.y+this.height/2+screenMoveY);
+    let angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
+    translate(this.x+this.width/2+screenMoveX, this.y+this.height/1.5+screenMoveY);
     rotate(angle);
-    image(weapon, -this.width/6, -this.height/6, this.width/3, this.height/3);
+    image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
     pop();
 
     
