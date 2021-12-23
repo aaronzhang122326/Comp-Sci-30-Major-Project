@@ -50,7 +50,11 @@ let playerShootLastTime;
 let enemyShootLastTime;
 let range = true;
 
-let floorImg;
+let floorImgOne;
+let floorImgTwo;
+let floorImgThree;
+let floorImgFour;
+
 let wallImg;
 let slashImg;
 
@@ -59,7 +63,11 @@ let slashAngle;
 let melee = false;
 
 function preload() {
-  floorImg = loadImage("assets/floorOne.png");
+  floorImgOne = loadImage("assets/floor1.PNG");
+  floorImgTwo = loadImage("assets/floor2.PNG");
+  floorImgThree = loadImage("assets/floor3.PNG");
+  floorImgFour = loadImage("assets/floor4.PNG");
+
   wallImg = loadImage("assets/wallOne.png");
   slashImg = loadImage("assets/swordSlash.png");
 
@@ -201,7 +209,18 @@ function displayGrid(col, row) {
         image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
       if (grid[y][x] === 2) { //interior
-        image(floorImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
+        if (random(0, 100) < 25){
+          image(floorImgOne, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
+        }
+        else if (random(0, 100) < 50) {
+          image(floorImgTwo, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
+        }
+        else if (random(0, 100) < 75) {
+          image(floorImgThree, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
+        }
+        else if (random(0, 100) < 100){
+          image(floorImgFour, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
+        }
       }
     }
   }
