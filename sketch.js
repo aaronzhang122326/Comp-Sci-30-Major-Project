@@ -23,7 +23,10 @@ let playerLTwo;
 let playerLThree;
 let playerLFour;
 
+let shooting = false; 
+
 let weapon;
+let bullet;
 
 let playerData;
 
@@ -52,7 +55,6 @@ let range = true;
 
 let floorImgOne;
 let floorImgTwo;
-let floorImgThree;
 let floorImgFour;
 
 let wallImg;
@@ -82,6 +84,7 @@ function preload() {
   playerLFour = loadImage("assets/player_sprite_8.png");
 
   weapon = loadImage("assets/weapon_1.png");
+  bullet = loadImage("assets/bullet.jpg");
 
   playerData = loadImage("assets/health setting.PNG");
 }
@@ -153,7 +156,7 @@ function draw() {
       let blocks = [
         {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
       ]
-      if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] !== 2){
+      if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
         if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
           bulletList.splice(i, 1);
         }
@@ -174,7 +177,7 @@ function draw() {
       let blocks = [
         {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
       ]
-      if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] !== 2){
+      if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
         if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
           enemyBulletList.splice(i, 1);
         }
@@ -208,17 +211,14 @@ function displayGrid(col, row) {
       if (grid[y][x] === 1) { //wall
         image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
-      if (grid[y][x] === 2) { //interior
-        if (random(0, 100) < 25){
+      if (grid[y][x] !== 1 && grid[y][x] !== 0) { //interior, grid[y][x] === 2
+        if (grid[y][x] === 2){
           image(floorImgOne, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
-        else if (random(0, 100) < 50) {
+        else if (grid[y][x] === 3) {
           image(floorImgTwo, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
-        else if (random(0, 100) < 75) {
-          image(floorImgThree, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
-        }
-        else if (random(0, 100) < 100){
+        else if (grid[y][x] === 4){
           image(floorImgFour, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
       }
@@ -355,6 +355,7 @@ class Bullet {
     this.hit = hit;
     this.disX = mouseX - screenMoveX - playerOne.x-playerOne.width/2;
     this.disY = mouseY - screenMoveY - playerOne.y-playerOne.height/2;
+    this.angle = atan2(mouseY-(playerOne.height/2+playerOne.y+screenMoveY), mouseX-(playerOne.width/2+playerOne.x+screenMoveX));
   }
   move() {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -377,8 +378,14 @@ class Bullet {
     }
   }
   display() {
-    fill("red");
-    circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
+    // fill("red");
+    // circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
+    angleMode(DEGREES);
+    push();//+playerOne.width/2, +playerOne.height/1.5
+    translate(this.x+screenMoveX, this.y+screenMoveY);
+    rotate(this.angle);
+    image(bullet, -this.radius, -this.radius/2, this.radius * 2, this.radius);
+    pop();
   }
 }
 
@@ -532,7 +539,7 @@ function generateInterior(){
     for (let x = 0; x < gridSize; x++){
       if (interior === true && grid[y][x] === 1) {
         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0) {
-          grid[y][x] = 2;
+          grid[y][x] = round(random(2, 4));
         }
       }
       if (grid[y][x] === 1 && interior === false) {
@@ -631,7 +638,7 @@ function spawnEnemies() {
     let spaceCount = 0;
     for (let y = roomList[i][1]; y < roomList[i][1] + roomList[i][3]; y++){
       for (let x = roomList[i][0]; x < roomList[i][0] + roomList[i][2]; x++) {
-        if (grid[y][x] === 2) {
+        if (grid[y][x] !== 1 || grid[y][x] !== 0) {
           spaceCount ++;
         }
       }
