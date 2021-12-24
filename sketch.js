@@ -9,6 +9,7 @@ let grid;
 let cellSize = 120;
 let gridSize = 60;
 
+
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
@@ -23,6 +24,9 @@ let playerLTwo;
 let playerLThree;
 let playerLFour;
 
+let slashing = false;
+let slashAngle;
+let melee = false;
 let shooting = false; 
 
 let weapon;
@@ -33,8 +37,6 @@ let playerData;
 let playerImgList;
 let playeImgPositionList;
 
-let walkCount = 0;
-
 let bulletList = [];
 let enemyBulletList = [];
 
@@ -42,13 +44,24 @@ let roomList = [];
 let roomNumber;
 let iCount = 0;
 
-let minionList = [];
-let archerList = [];
-
 let screenMoveX = 0;
 let screenMoveY = 0;
-
 let time;
+
+let minionList = [];
+let minionImgList;
+
+let hogImgPositionList;
+let hogLOne;
+let hogLTwo;
+let hogLThree;
+
+let hogROne;
+let hogRTwo;
+let hogRThree;
+
+
+let archerList = [];
 let playerShootLastTime;
 let enemyShootLastTime;
 let range = true;
@@ -56,13 +69,10 @@ let range = true;
 let floorImgOne;
 let floorImgTwo;
 let floorImgFour;
-
 let wallImg;
 let slashImg;
 
-let slashing = false;
-let slashAngle;
-let melee = false;
+
 
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
@@ -87,6 +97,15 @@ function preload() {
   bullet = loadImage("assets/bullet.jpg");
 
   playerData = loadImage("assets/health setting.PNG");
+
+  hogLOne = loadImage("assets/hog_1.png");
+  hogLTwo = loadImage("assets/hog_2.png");
+  hogLThree = loadImage("assets/hog_3.png");
+
+  hogROne = loadImage("assets/hog_4.png");
+  hogRTwo = loadImage("assets/hog_5.png");
+  hogRThree = loadImage("assets/hog_6.png");
+
 }
 
 function setup() {
@@ -103,6 +122,13 @@ function setup() {
 
   playerImgPositionList = [0, 7, 7, 0];
 
+  hogImgList = [
+    [hogLOne, hogLTwo, hogLThree],
+    [hogROne, hogRTwo, hogRThree],
+  ];
+
+  hogImgPositionList = [0, 10, 0];
+
   spawnEnemies();
   screenMoveX -= round(width/2+(playerOne.x-width));
   screenMoveY -= round(height/2+(playerOne.y-height));
@@ -111,6 +137,8 @@ function setup() {
   enemyShootLastTime = time;
   // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
   // archerList.push(archer);
+  let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
+  minionList.push(minion);
 }
 
 function draw() {
@@ -260,14 +288,10 @@ class Player { //player class
     if (keyIsDown(65) && this.leftFree) {
       this.x -= this.speed;
       screenMoveX += this.speed; 
-      // this.facingRight = false;
-      // this.facingLeft = true;
     }
     else if (keyIsDown(68) && this.rightFree) {
       this.x += this.speed;
       screenMoveX -= this.speed; 
-      // this.facingRight = true;
-      // this.facingLeft = false;
     }
 
     if (mouseX >= this.x + screenMoveX){
@@ -423,15 +447,29 @@ class Minions {
     this.leftFree = true;
     this.upFree = true;
     this.downFree = true;
+    this.walkCount = 0;
+    if (random(0, 100) > 50) {
+      this.facingLeft = true;
+    }
+    else {
+      this.facingLeft = false;
+    }
+    
+    this.facingRight = !this.facingLeft; 
   }
   move() {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10) {
+      this.walkCount += 1;
       movementCheck(this);
       if (this.x < playerOne.x && this.rightFree) {
         this.x += this.speed;
+        this.facingLeft = false;
+        this.facingRight = true;
       }
       else if (this.x > playerOne.x && this.leftFree) {
         this.x -= this.speed;
+        this.facingLeft = true;
+        this.facingRight = false;
       }
       if (this.y < playerOne.y && this.downFree) {
         this.y += this.speed;
@@ -472,11 +510,19 @@ class Minions {
       }
       this.attackLastTime = time;
     }
+    if (this.walkCount >= 18) {
+      this.walkCount = 0;
+    } 
   }
-
   display() {
-    fill("green");
-    rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+    if (this.facingLeft) {//, 
+      image(hogImgList[0][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
+    }
+    if (this.facingRight) {
+      image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
+    }
+    // fill("green");
+    // rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
@@ -514,6 +560,16 @@ class Archers extends Minions {
       enemyBulletList.push(enemyBullet);
       this.enemyShootLastTime = time;
     }
+  }
+  display() {
+    // if (this.facingLeft) {//- playerImgPositionList[floor(this.walkCount/5)], - playerImgPositionList[floor(this.walkCount/5)]
+    //   image(hogImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+    // }
+    // if (this.facingRight) {
+    //   image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+    // }
+    fill("green");
+    rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
@@ -555,7 +611,7 @@ function generateInterior(){
 
 function generateBridge() {
   if (roomList[iCount-1][1] > roomList[iCount][1]){ //building up
-    for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {
+    for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]+3; y--) {
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 3; x++) {
         grid[y][x] = 1;
       }
@@ -643,13 +699,13 @@ function spawnEnemies() {
         }
       }
     }
-    for (let a = 0; a < round(spaceCount/10); a++) {
-      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
-      minionList.push(minion);
+    for (let a = 0; a < round(spaceCount/30); a++) {
+      //let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5);
+      //minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, 1000, 0);//enemyShootLastTime
-      archerList.push(archer);
+      //let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, 1000, 0);//enemyShootLastTime
+      //archerList.push(archer);
     }
   }  
 }
