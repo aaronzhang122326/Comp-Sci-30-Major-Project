@@ -76,6 +76,8 @@ let archerROne;
 let archerRTwo;
 let archerRThree;
 
+let enemyBullet;
+
 let floorImgOne;
 let floorImgTwo;
 let floorImgFour;
@@ -124,6 +126,8 @@ function preload() {
   archerROne = loadImage("assets/archer_4.png");
   archerRTwo = loadImage("assets/archer_5.png");
   archerRThree = loadImage("assets/archer_6.jpg");
+
+  enemyBullet = loadImage("assets/enemy_bullet.PNG");
 }
 
 function setup() {
@@ -160,8 +164,8 @@ function setup() {
   time = millis();
   playerShootLastTime = time;
   enemyShootLastTime = time;
-  let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
-  archerList.push(archer);
+  // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
+  // archerList.push(archer);
   // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 5);
   // minionList.push(minion);
 }
@@ -238,9 +242,6 @@ function draw() {
     }
   }
   displayData();
-
-  //console.log(playerOne.walkCount/5);
-  console.log(playerOne.walkcount/5);
 }
 
 //creating and displaying grid
@@ -454,8 +455,9 @@ class EnemyBullet extends Bullet {
     }
   }
   display() {
-    fill("green");
-    circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
+    // fill("green");
+    // circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
+    image(enemyBullet, this.x + screenMoveX, this.y + screenMoveY, this.radius*2);
   }
 }
 
@@ -553,26 +555,39 @@ class Minions {
 
 class Archers extends Minions {
   constructor(x, y, width, height, speed, lives, shootSpeed, ShootLastTime) {
-    super(x, y, width, height, speed, lives, walkCount, facingRight, facingLeft);
-    this.x = x;
-    this.y = y;
+    super(x, y, width, height, speed, lives);
+    // this.x = x;
+    // this.y = y;
     this.shootSpeed = shootSpeed;
     this.enemyShootLastTime = ShootLastTime;
-    this.walkCount = walkCount;
+    this.walkCount = 0;
+    if (random(0, 100) > 50) {
+      this.facingLeft = true;
+    }
+    else {
+      this.facingLeft = false;
+    }
+    
+    this.facingRight = !this.facingLeft; 
   }
   move() {
+    if (this.x < playerOne.x) {
+      this.facingLeft = false;
+      this.facingRight = true;
+    }
+    else if (this.x > playerOne.x) {
+      this.facingLeft = true;
+      this.facingRight = false;
+    }
+
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
       this.walkCount += 1;
       movementCheck(this);
       if (this.x < playerOne.x && this.rightFree) {
         this.x += this.speed;
-        this.facingLeft = false;
-        this.facingRight = true;
       }
       else if (this.x > playerOne.x && this.leftFree) {
         this.x -= this.speed;
-        this.facingLeft = true;
-        this.facingRight = false;
       }
       if (this.y < playerOne.y && this.downFree) {
         this.y += this.speed;
@@ -586,6 +601,7 @@ class Archers extends Minions {
     } 
     else if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10){
       this.shoot();
+      console.log("1");
     }
     
   }
@@ -598,10 +614,10 @@ class Archers extends Minions {
   }
   display() {
     if (this.facingLeft) {//- playerImgPositionList[floor(this.walkCount/5)], - playerImgPositionList[floor(this.walkCount/5)]
-      image(archerImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+      image(archerImgList[1][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
     if (this.facingRight) {
-      image(archerImgList[1][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+      image(archerImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
     //fill("green");
     //rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
@@ -739,8 +755,8 @@ function spawnEnemies() {
       minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      //let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/2, cellSize/2, 5, 5, 1000, 0);//enemyShootLastTime
-      //archerList.push(archer);
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, 5, 5, 1000, 0);//enemyShootLastTime
+      archerList.push(archer);
     }
   }  
 }
@@ -866,5 +882,4 @@ function keyPressed() {
 }
 
 function mousePressed(){
-  console.log(mouseX, mouseY);
 }
