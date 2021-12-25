@@ -33,6 +33,11 @@ let weapon;
 let bullet;
 
 let playerData;
+let healthBar;
+let health;
+let manaBar;
+let mana;
+let manaValue;
 
 let playerImgList;
 let playeImgPositionList;
@@ -109,6 +114,10 @@ function preload() {
   bullet = loadImage("assets/bullet.jpg");
 
   playerData = loadImage("assets/health setting.PNG");
+  healthBar = loadImage("assets/health_bar.png");
+  manaBar = loadImage("assets/mana_bar.png");
+  health = loadImage("assets/health.png");
+  mana = loadImage("assets/mana.png");
 
   hogLOne = loadImage("assets/hog_1.png");
   hogLTwo = loadImage("assets/hog_2.png");
@@ -135,7 +144,7 @@ function setup() {
   grid = create2DArray(gridSize, gridSize);
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 250, 100);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 250, 100, 200);
 
   playerImgList = [
     [playerLOne, playerLTwo, playerLThree, playerLFour],
@@ -242,6 +251,7 @@ function draw() {
     }
   }
   displayData();
+  //console.log(playerOne.health);
 }
 
 //creating and displaying grid
@@ -281,7 +291,7 @@ function displayGrid(col, row) {
 }
 
 class Player { //player class
-  constructor(x, y, width, height, speed, shootSpeed, health) {
+  constructor(x, y, width, height, speed, shootSpeed, health, mana) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -293,11 +303,13 @@ class Player { //player class
     this.downFree;
     this.shootSpeed = shootSpeed;
     this.health = health;
+    this.mana = mana;
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
     this.facingRight = true;
     this.facingLeft = false;
     this.walkcount = 0;
+    this.lastTime = 0;
   }
   move() {
     movementCheck(this);
@@ -339,6 +351,10 @@ class Player { //player class
     if (this.walkCount >= 20) {
       this.walkCount = 0;
     }
+    if (time > this.lastTime + 1000 && this.mana + 1 < 200) {
+      this.mana += 1;
+      this.lastTime = time;
+    }
   }
   display() {
     if (this.facingLeft) {
@@ -361,8 +377,10 @@ class Player { //player class
   }
 
   shoot() { 
-    if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range) {
+    
+    if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range && this.mana > 5) {
       let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
+      this.mana -= 5;
       bulletList.push(playerBullet);
       playerShootLastTime = time;
     }
@@ -601,7 +619,7 @@ class Archers extends Minions {
     } 
     else if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10){
       this.shoot();
-      console.log("1");
+      //console.log("1");
     }
     
   }
@@ -762,14 +780,15 @@ function spawnEnemies() {
 }
 
 function displayData() {
-  image(playerData, 50, 50, 165*1.25, 76*1.25);
+  //image(playerData, 50, 50, 165*1.25, 76*1.25);
   if (playerOne.health >= 0) {
-    fill("green");
-    rect(50, 50, playerOne.health* 5, 25);
-    fill("red");
-    rect(50 + playerOne.health*5, 50, 500-playerOne.health*5, 25);
-  
-  } 
+    image(health, 105, 67, playerOne.health*3.1, 42);
+  }
+  if (playerOne.mana >= 0) {
+    image(mana, 108, 167, playerOne.mana*3.1/2, 52);
+  }
+  image(healthBar, 52, 50, 500*0.75, 100*0.75);
+  image(manaBar, 52, 150, 500*0.75, 100*0.75);
 }
 
 function movementCheck(object){
@@ -882,4 +901,5 @@ function keyPressed() {
 }
 
 function mousePressed(){
+  console.log(mouseX, mouseY);
 }
