@@ -351,8 +351,8 @@ class Player { //player class
     if (this.walkCount >= 20) {
       this.walkCount = 0;
     }
-    if (time > this.lastTime + 1000 && this.mana + 1 < 200) {
-      this.mana += 1;
+    if (time > this.lastTime + 1000 && this.mana + 5 < 200) {
+      this.mana += 5;
       this.lastTime = time;
     }
   }
