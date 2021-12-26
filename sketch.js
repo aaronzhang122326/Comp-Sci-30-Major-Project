@@ -5,6 +5,11 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+//problems:
+//1. enemy back and forth
+//2. enemy stuck behind wall
+//3. enemy random movement
+
 let grid;
 let cellSize = 120;
 let gridSize = 60;
@@ -97,7 +102,7 @@ function preload() {
   floorImgThree = loadImage("assets/floor3.PNG");
   floorImgFour = loadImage("assets/floor4.PNG");
 
-  wallImg = loadImage("assets/wallOne.png");
+  wallImg = loadImage("assets/wall.jpg");
   slashImg = loadImage("assets/swordSlash.png");
 
   playerROne = loadImage("assets/player_sprite.png");
@@ -493,6 +498,7 @@ class Minions {
     this.upFree = true;
     this.downFree = true;
     this.walkCount = 0;
+    this.directionCount = 0;
     if (random(0, 100) > 50) {
       this.facingLeft = true;
     }
@@ -503,31 +509,50 @@ class Minions {
     this.facingRight = !this.facingLeft; 
   }
   move() {
-    if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10) {
+    let pX = playerOne.x + playerOne.width/2;
+    let pY = playerOne.y + playerOne.height/2;
+    let tX = this.x+this.width/2;
+    let tY = this.y+this.height/2;
+
+    
+
+    if (sqrt(sq(pX - tX) + sq(pY - tY)) < cellSize *10) {
       this.walkCount += 1;
+      this.directionCount = 0;
       movementCheck(this);
-      if (this.x < playerOne.x && this.rightFree) {
-        this.x += this.speed;
-        this.facingLeft = false;
-        this.facingRight = true;
+      if (tX + this.speed < pX) {
+        if (this.rightFree) {
+          this.x += this.speed;
+          this.facingLeft = false;
+          this.facingRight = true;
+          this.directionCount += 1;
+        }
       }
-      else if (this.x > playerOne.x && this.leftFree) {
+      else if (tX - this.speed > pX && this.leftFree) {
         this.x -= this.speed;
         this.facingLeft = true;
         this.facingRight = false;
+        this.directionCount += 1;
       }
-      if (this.y < playerOne.y && this.downFree) {
+      if (tY + this.speed < pY && this.downFree) {
         this.y += this.speed;
+        this.directionCount += 1;
       }
-      else if (this.y > playerOne.y && this.upFree) {
+      else if (tY - this.speed > pY && this.upFree) {
         this.y -= this.speed;
+        this.directionCount += 1;
       }
     } 
+
+    if (this.directionCount < 2) {
+      console.log(this.x, this.y);
+    }
+
     if (time - this.attackLastTime > 1000) {
-      if (this.x - playerOne.x > 0) { //checking for enemy character coliision
-        if (this.x - playerOne.x < this.width) {
-          if (this.y - playerOne.y > 0) { 
-            if (this.y - playerOne.y < this.height) {
+      if (tX - pX > 0) { //checking for enemy character coliision
+        if (tX - pX < this.width) {
+          if (tY - pY > 0) { 
+            if (tY - pY < this.height) {
               playerOne.health -= 5;
             }
             
