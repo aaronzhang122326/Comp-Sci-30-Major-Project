@@ -94,8 +94,12 @@ let floorImgFour;
 let wallImg;
 let slashImg;
 
+let healthPot;
+let itemList = [];
+
 let pause = false;
 let mouseOverPause = false;
+let cursor;
 
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
@@ -124,6 +128,7 @@ function preload() {
   manaBar = loadImage("assets/mana_bar.png");
   health = loadImage("assets/health.png");
   mana = loadImage("assets/mana.png");
+  cursor = loadImage("assets/cursor.png");
 
   hogLOne = loadImage("assets/hog_1.png");
   hogLTwo = loadImage("assets/hog_2.png");
@@ -143,6 +148,8 @@ function preload() {
   archerRThree = loadImage("assets/archer_6.jpg");
 
   enemyBullet = loadImage("assets/enemy_bullet.PNG");
+
+  healthPot = loadImage("assets/health_pot.PNG");
 }
 
 function setup() {
@@ -151,6 +158,7 @@ function setup() {
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 250, 100, 200);
+  //pot = new Items(playerOnePositionX, playerOnePositionY, 50, 50);
 
   playerImgList = [
     [playerLOne, playerLTwo, playerLThree, playerLFour],
@@ -202,6 +210,10 @@ function draw() {
       minionList[i].move();
       minionList[i].display();
       if (minionList[i].lives <= 0) {
+        if (random(0, 100) > 50) {
+          potion = new Items(minionList[i].x, minionList[i].y, 56/3, 77/3);
+          itemList.push(potion); 
+        }
         minionList.splice(i, 1);
       }
     }
@@ -211,8 +223,23 @@ function draw() {
       archerList[i].move();
       archerList[i].display();
       if (archerList[i].lives <= 0) {
+        if (random(0, 100) > 50) {
+          potion = new Items(archerList[i].x, archerList[i].y, 56/3, 77/3);
+          itemList.push(potion); 
+        }
         archerList.splice(i, 1);
       }
+    }
+
+    //items
+    for (let i = 0; i < itemList.length; i++){
+      itemList[i].display();
+      // let iX = itemList[i].x + itemList[i].width + screenMoveX;
+      // let iY = itemList[i].y + itemList[i].height + screenMoveY;
+      // if (mouseIsPressed && mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
+      //   itemList.splice(i, 1);
+      //   playerOne.health += 20;
+      // }
     }
 
     //bullets splice
@@ -677,6 +704,22 @@ class Archers extends Minions {
   }
 }
 
+class Items {
+  constructor(x, y, width, height){
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+  display() {
+    image(healthPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+  }
+    //let iX = this.x + this.width + screenMoveX;
+    //let iY = this.y + this.height + screenMoveY;
+    //if (mouseIsPressed && mouseX > this.width + screenMoveX && mouseX < iX && mouseY > this.y + screenMoveY && mouseY < iY){
+
+}
+
 function generateRoom(locX, locY) {
   let roomWidth = round(random(4,8));
   let roomHeight = round(random(4,8));
@@ -835,6 +878,10 @@ function displayData() {
   rect(1810, 60, 20, 80);
 
   miniMap();
+  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
+    noCursor();
+  }
+  image(cursor, mouseX, mouseY, 50, 50);
 }
 
 function movementCheck(object){
@@ -969,4 +1016,20 @@ function miniMap(){
   }
   fill("red");
   rect(playerOne.x/24+1550, playerOne.y/24+170, playerOne.width/24, playerOne.height/24);
+}
+
+function mouseClicked(){
+  for (let i = 0; i < itemList.length; i++){
+    let iX = itemList[i].x + itemList[i].width + screenMoveX;
+    let iY = itemList[i].y + itemList[i].height + screenMoveY;
+    if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
+      itemList.splice(i, 1);
+      if (playerOne.health + 20 <= 100){
+        playerOne.health += 20;
+      }
+      else {
+        playerOne.health += 100 - playerOne.health;
+      }
+    }
+  }
 }
