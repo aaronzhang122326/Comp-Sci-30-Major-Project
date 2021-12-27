@@ -94,7 +94,8 @@ let floorImgFour;
 let wallImg;
 let slashImg;
 
-
+let pause = false;
+let mouseOverPause = false;
 
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
@@ -185,78 +186,86 @@ function setup() {
 }
 
 function draw() {
-  background(220);
-  displayGrid(gridSize, gridSize); 
-  time = millis();
+  if (pause === false) {
+    background(220);
+    displayGrid(gridSize, gridSize); 
+    time = millis();
 
-  //player movement
-  playerOne.move();
-  playerOne.shoot();
-  playerOne.slash();
-  playerOne.display();
+    //player movement
+    playerOne.move();
+    playerOne.shoot();
+    playerOne.slash();
+    playerOne.display();
 
-  //minion movement
-  for (let i = 0; i < minionList.length; i++) {
-    minionList[i].move();
-    minionList[i].display();
-    if (minionList[i].lives <= 0) {
-      minionList.splice(i, 1);
-    }
-  }
-
-  //archer movement
-  for (let i = 0; i < archerList.length; i++) {
-    archerList[i].move();
-    archerList[i].display();
-    if (archerList[i].lives <= 0) {
-      archerList.splice(i, 1);
-    }
-  }
-
-  //bullets splice
-  for (let i = 0; i < bulletList.length; i++){
-    bulletList[i].move();
-    bulletList[i].display();    
-    if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
-      bulletList.splice(i, 1);
-    }
-    else if (bulletList[i].hit <= 0) {
-      bulletList.splice(i, 1);
-    }
-    else {
-      let blocks = [
-        {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
-      ]
-      if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
-        if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
-          bulletList.splice(i, 1);
-        }
+    //minion movement
+    for (let i = 0; i < minionList.length; i++) {
+      minionList[i].move();
+      minionList[i].display();
+      if (minionList[i].lives <= 0) {
+        minionList.splice(i, 1);
       }
     }
-  }
+
+    //archer movement
+    for (let i = 0; i < archerList.length; i++) {
+      archerList[i].move();
+      archerList[i].display();
+      if (archerList[i].lives <= 0) {
+        archerList.splice(i, 1);
+      }
+    }
+
     //bullets splice
-  for (let i = 0; i < enemyBulletList.length; i++){
-    enemyBulletList[i].move();
-    enemyBulletList[i].display();    
-    if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
-      enemyBulletList.splice(i, 1);
-    }
-    else if (enemyBulletList[i].hit <= 0) {
-      enemyBulletList.splice(i, 1);
-    }
-    else {
-      let blocks = [
-        {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
-      ]
-      if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
-        if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
-          enemyBulletList.splice(i, 1);
+    for (let i = 0; i < bulletList.length; i++){
+      bulletList[i].move();
+      bulletList[i].display();    
+      if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
+        bulletList.splice(i, 1);
+      }
+      else if (bulletList[i].hit <= 0) {
+        bulletList.splice(i, 1);
+      }
+      else {
+        let blocks = [
+          {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
+        ]
+        if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
+          if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
+            bulletList.splice(i, 1);
+          }
         }
       }
     }
+      //bullets splice
+    for (let i = 0; i < enemyBulletList.length; i++){
+      enemyBulletList[i].move();
+      enemyBulletList[i].display();    
+      if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
+        enemyBulletList.splice(i, 1);
+      }
+      else if (enemyBulletList[i].hit <= 0) {
+        enemyBulletList.splice(i, 1);
+      }
+      else {
+        let blocks = [
+          {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
+        ]
+        if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
+          if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
+            enemyBulletList.splice(i, 1);
+          }
+        }
+      }
+    }
+    displayData();
+    //console.log(playerOne.health);
+  }    
+  if (mouseX > 1750 && mouseX < 1850 && mouseY > 50 && mouseY < 150) {
+    mouseOverPause = true;
   }
-  displayData();
-  //console.log(playerOne.health);
+  else {
+    mouseOverPause = false;
+  }
 }
 
 //creating and displaying grid
@@ -274,7 +283,7 @@ function displayGrid(col, row) {
   for (let y = 0; y < col; y++) {
     for (let x = 0; x < row; x++) {
       if (grid[y][x] === 0) {
-        fill("black");
+        fill(48, 77, 95);
         rect(x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
       if (grid[y][x] === 1) { //wall
@@ -545,7 +554,8 @@ class Minions {
     } 
 
     if (this.directionCount < 2) {
-      console.log(this.x, this.y);
+      //console.log(this.x, this.y);
+      
     }
 
     if (time - this.attackLastTime > 1000) {
@@ -814,6 +824,17 @@ function displayData() {
   }
   image(healthBar, 52, 50, 500*0.75, 100*0.75);
   image(manaBar, 52, 150, 500*0.75, 100*0.75);
+
+  //pause icon
+  noStroke();
+  fill("white");
+  if (mouseOverPause) {
+    fill("grey");
+  }
+  rect(1770, 60, 20, 80);
+  rect(1810, 60, 20, 80);
+
+  miniMap();
 }
 
 function movementCheck(object){
@@ -927,4 +948,24 @@ function keyPressed() {
 
 function mousePressed(){
   console.log(mouseX, mouseY);
+  // if (mouseX > 1750 && mouseX < 1850 && mouseY > 50 && mouseY < 150) {
+  //   pause = !pause;
+  // }
+  if (mouseOverPause) {
+    pause = !pause;
+  }
+}
+
+function miniMap(){
+  fill("grey");
+  rect(1550, 170, width/7, height/7);
+  for (let y = 0; y < gridList.length; y++) {
+    for (let x = 0; x < gridList[y].length; x++) {
+      if (grid[y][x] !== 0 && grid[y][x] !== 1){
+        fill("black");
+        rect(); //countinue
+      }
+
+    }
+  }
 }
