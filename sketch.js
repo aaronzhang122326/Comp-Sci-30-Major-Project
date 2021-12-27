@@ -958,14 +958,15 @@ function mousePressed(){
 
 function miniMap(){
   fill("grey");
-  rect(1550, 170, width/7, height/7);
-  for (let y = 0; y < gridList.length; y++) {
-    for (let x = 0; x < gridList[y].length; x++) {
+  rect(1550, 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); //grid[0].length*(cellSize/24), grid.length*(cellSize/24)
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect(); //countinue
+        rect(1550+x*cellSize/24, 170+y*cellSize/24, cellSize/24, cellSize/24); 
       }
-
     }
   }
+  fill("red");
+  rect(playerOne.x/24+1550, playerOne.y/24+170, playerOne.width/24, playerOne.height/24);
 }
