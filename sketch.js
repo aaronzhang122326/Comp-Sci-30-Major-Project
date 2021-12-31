@@ -157,7 +157,7 @@ function setup() {
   grid = create2DArray(gridSize, gridSize);
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 250, 100, 200);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200);
   //pot = new Items(playerOnePositionX, playerOnePositionY, 50, 50);
 
   playerImgList = [
@@ -211,7 +211,7 @@ function draw() {
       minionList[i].display();
       if (minionList[i].lives <= 0) {
         if (random(0, 100) > 50) {
-          potion = new Items(minionList[i].x, minionList[i].y, 56/3, 77/3);
+          potion = new Items(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
           itemList.push(potion); 
         }
         minionList.splice(i, 1);
@@ -224,7 +224,7 @@ function draw() {
       archerList[i].display();
       if (archerList[i].lives <= 0) {
         if (random(0, 100) > 50) {
-          potion = new Items(archerList[i].x, archerList[i].y, 56/3, 77/3);
+          potion = new Items(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
           itemList.push(potion); 
         }
         archerList.splice(i, 1);
@@ -287,12 +287,13 @@ function draw() {
     displayData();
     //console.log(playerOne.health);
   }    
-  if (mouseX > 1750 && mouseX < 1850 && mouseY > 50 && mouseY < 150) {
+  if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
     mouseOverPause = true;
   }
   else {
     mouseOverPause = false;
   }
+  image(cursor, mouseX, mouseY, 50*(width/1920), 50);
 }
 
 //creating and displaying grid
@@ -332,7 +333,7 @@ function displayGrid(col, row) {
 }
 
 class Player { //player class
-  constructor(x, y, width, height, speed, shootSpeed, health, mana) {
+  constructor(x, y, width, height, speed, shootSpeed, slashSpeed, health, mana) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -343,6 +344,7 @@ class Player { //player class
     this.upFree;
     this.downFree;
     this.shootSpeed = shootSpeed;
+    this.slashSpeed = slashSpeed;
     this.health = health;
     this.mana = mana;
     this.positionY = floor(this.y/cellSize);
@@ -427,7 +429,7 @@ class Player { //player class
     }
   }
   slash(){ 
-    if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && slashing === false) {
+    if (mouseIsPressed &&  time - playerShootLastTime > this.slashSpeed && slashing === false) {
       angleMode(DEGREES);
       slashing = true;
       playerShootLastTime = time;
@@ -860,13 +862,13 @@ function spawnEnemies() {
 function displayData() {
   //image(playerData, 50, 50, 165*1.25, 76*1.25);
   if (playerOne.health >= 0) {
-    image(health, 105, 67, playerOne.health*3.1, 42);
+    image(health, 105*(width/1920), 67, playerOne.health*3.1*(width/1920), 42);
   }
   if (playerOne.mana >= 0) {
-    image(mana, 108, 167, playerOne.mana*3.1/2, 52);
+    image(mana, 108*(width/1920), 167, playerOne.mana*3.1/2*(width/1920), 52);
   }
-  image(healthBar, 52, 50, 500*0.75, 100*0.75);
-  image(manaBar, 52, 150, 500*0.75, 100*0.75);
+  image(healthBar, 52*(width/1920), 50, 500*0.75*(width/1920), 100*0.75);
+  image(manaBar, 52*(width/1920), 150, 500*0.7*(width/1920), 100*0.75);
 
   //pause icon
   noStroke();
@@ -874,14 +876,14 @@ function displayData() {
   if (mouseOverPause) {
     fill("grey");
   }
-  rect(1770, 60, 20, 80);
-  rect(1810, 60, 20, 80);
+  rect(1770*(width/1920), 60, 20*(width/1920), 80);
+  rect(1810*(width/1920), 60, 20*(width/1920), 80);
 
   miniMap();
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
     noCursor();
   }
-  image(cursor, mouseX, mouseY, 50, 50);
+  // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
 }
 
 function movementCheck(object){
@@ -1010,12 +1012,12 @@ function miniMap(){
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect(1550+x*cellSize/24, 170+y*cellSize/24, cellSize/24, cellSize/24); 
+        rect((1550+x*cellSize/24)*(width/1920), 170+y*cellSize/24, cellSize/24*(width/1920), cellSize/24); 
       }
     }
   }
   fill("red");
-  rect(playerOne.x/24+1550, playerOne.y/24+170, playerOne.width/24, playerOne.height/24);
+  rect((playerOne.x/24+1550)*(width/1920), playerOne.y/24+170, playerOne.width/24*(width/1920), playerOne.height/24);
 }
 
 function mouseClicked(){
