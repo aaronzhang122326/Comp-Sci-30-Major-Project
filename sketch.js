@@ -195,7 +195,6 @@ function setup() {
 
 function draw() {
   if (pause === false) {
-    background(220);
     displayGrid(gridSize, gridSize); 
     time = millis();
 
@@ -204,6 +203,8 @@ function draw() {
     playerOne.shoot();
     playerOne.slash();
     playerOne.display();
+
+    //playerOne.display();
 
     //minion movement
     for (let i = 0; i < minionList.length; i++) {
