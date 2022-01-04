@@ -194,22 +194,21 @@ function setup() {
 }
 
 function draw() {
+  displayGrid(gridSize, gridSize); 
   if (pause === false) {
-    displayGrid(gridSize, gridSize); 
+    //displayGrid(gridSize, gridSize); 
     time = millis();
 
     //player movement
     playerOne.move();
     playerOne.shoot();
     playerOne.slash();
-    playerOne.display();
-
-    //playerOne.display();
+    // playerOne.display();
 
     //minion movement
     for (let i = 0; i < minionList.length; i++) {
       minionList[i].move();
-      minionList[i].display();
+      // minionList[i].display();
       if (minionList[i].lives <= 0) {
         if (random(0, 100) > 50) {
           potion = new Items(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
@@ -222,7 +221,7 @@ function draw() {
     //archer movement
     for (let i = 0; i < archerList.length; i++) {
       archerList[i].move();
-      archerList[i].display();
+      //archerList[i].display();
       if (archerList[i].lives <= 0) {
         if (random(0, 100) > 50) {
           potion = new Items(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
@@ -246,7 +245,7 @@ function draw() {
     //bullets splice
     for (let i = 0; i < bulletList.length; i++){
       bulletList[i].move();
-      bulletList[i].display();    
+      //bulletList[i].display();    
       if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
         bulletList.splice(i, 1);
       }
@@ -267,7 +266,7 @@ function draw() {
       //bullets splice
     for (let i = 0; i < enemyBulletList.length; i++){
       enemyBulletList[i].move();
-      enemyBulletList[i].display();    
+      //enemyBulletList[i].display();    
       if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
         enemyBulletList.splice(i, 1);
       }
@@ -285,16 +284,35 @@ function draw() {
         }
       }
     }
-    displayData();
-    //console.log(playerOne.health);
+    
   }    
+
   if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
     mouseOverPause = true;
   }
   else {
     mouseOverPause = false;
   }
+  displayData();
+  playerOne.display();
+  for (let i = 0; i < minionList.length; i++) {
+    minionList[i].display();
+  }
+  for (let i = 0; i < archerList.length; i++) {
+    archerList[i].display();
+  }
+  for (let i = 0; i < itemList.length; i++){
+    itemList[i].display();
+  }
+  for (let i = 0; i < bulletList.length; i++){
+    bulletList[i].display();    
+  }
+  for (let i = 0; i < enemyBulletList.length; i++){
+    enemyBulletList[i].display();    
+  }
+
   image(cursor, mouseX, mouseY, 50*(width/1920), 50);
+  console.log(slashing, melee);
 }
 
 //creating and displaying grid
@@ -318,7 +336,7 @@ function displayGrid(col, row) {
       if (grid[y][x] === 1) { //wall
         image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
-      if (grid[y][x] !== 1 && grid[y][x] !== 0) { //interior, grid[y][x] === 2
+      if (grid[y][x] !== 1 && grid[y][x] !== 0) { //interior
         if (grid[y][x] === 2){
           image(floorImgOne, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
@@ -352,8 +370,9 @@ class Player { //player class
     this.positionX = floor(this.x/cellSize);
     this.facingRight = true;
     this.facingLeft = false;
-    this.walkcount = 0;
+    this.walkCount = 0;
     this.lastTime = 0;
+    this.angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
   }
   move() {
     movementCheck(this);
@@ -399,6 +418,7 @@ class Player { //player class
       this.mana += 5;
       this.lastTime = time;
     }
+    this.angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
   }
   display() {
     if (this.facingLeft) {
@@ -409,9 +429,9 @@ class Player { //player class
     }
     angleMode(DEGREES);
     push();
-    let angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
+    //let angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
     translate(this.x+this.width/2+screenMoveX, this.y+this.height/1.5+screenMoveY);
-    rotate(angle);
+    rotate(this.angle);
     image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
     pop();
 
@@ -437,11 +457,14 @@ class Player { //player class
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
     }
     if (slashing & melee) {
+      console.log("1");
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
+      //rotate(this.angle);
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
       pop();
+
 
       // push();
       // translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
@@ -869,7 +892,7 @@ function displayData() {
     image(mana, 108*(width/1920), 167, playerOne.mana*3.1/2*(width/1920), 52);
   }
   image(healthBar, 52*(width/1920), 50, 500*0.75*(width/1920), 100*0.75);
-  image(manaBar, 52*(width/1920), 150, 500*0.7*(width/1920), 100*0.75);
+  image(manaBar, 52*(width/1920), 150, 500*0.75*(width/1920), 100*0.75);
 
   //pause icon
   noStroke();
@@ -1007,7 +1030,8 @@ function mousePressed(){
 }
 
 function miniMap(){
-  fill("grey");
+  //fill("grey");
+  fill(142, 142, 142, 100);
   rect(1550, 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); //grid[0].length*(cellSize/24), grid.length*(cellSize/24)
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
