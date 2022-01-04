@@ -158,7 +158,6 @@ function setup() {
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200);
-  //pot = new Items(playerOnePositionX, playerOnePositionY, 50, 50);
 
   playerImgList = [
     [playerLOne, playerLTwo, playerLThree, playerLFour],
@@ -211,7 +210,7 @@ function draw() {
       // minionList[i].display();
       if (minionList[i].lives <= 0) {
         if (random(0, 100) > 50) {
-          potion = new Items(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
+          let potion = new Items(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, healthPot);
           itemList.push(potion); 
         }
         minionList.splice(i, 1);
@@ -234,12 +233,6 @@ function draw() {
     //items
     for (let i = 0; i < itemList.length; i++){
       itemList[i].display();
-      // let iX = itemList[i].x + itemList[i].width + screenMoveX;
-      // let iY = itemList[i].y + itemList[i].height + screenMoveY;
-      // if (mouseIsPressed && mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
-      //   itemList.splice(i, 1);
-      //   playerOne.health += 20;
-      // }
     }
 
     //bullets splice
@@ -731,19 +724,16 @@ class Archers extends Minions {
 }
 
 class Items {
-  constructor(x, y, width, height){
+  constructor(x, y, width, height, image){
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.image = image;
   }
   display() {
-    image(healthPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+    image(this.image, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
-    //let iX = this.x + this.width + screenMoveX;
-    //let iY = this.y + this.height + screenMoveY;
-    //if (mouseIsPressed && mouseX > this.width + screenMoveX && mouseX < iX && mouseY > this.y + screenMoveY && mouseY < iY){
-
 }
 
 function generateRoom(locX, locY) {
@@ -1032,7 +1022,7 @@ function mousePressed(){
 function miniMap(){
   //fill("grey");
   fill(142, 142, 142, 100);
-  rect(1550, 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); //grid[0].length*(cellSize/24), grid.length*(cellSize/24)
+  rect(1550*(width/1920), 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); //grid[0].length*(cellSize/24), grid.length*(cellSize/24)
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
