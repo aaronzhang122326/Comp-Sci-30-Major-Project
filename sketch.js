@@ -150,6 +150,7 @@ function preload() {
   enemyBullet = loadImage("assets/enemy_bullet.PNG");
 
   healthPot = loadImage("assets/health_pot.PNG");
+  manaPot = loadImage("assets/mana_pot.png");
 }
 
 function setup() {
@@ -209,9 +210,13 @@ function draw() {
       minionList[i].move();
       // minionList[i].display();
       if (minionList[i].lives <= 0) {
-        if (random(0, 100) > 50) {
-          let potion = new Items(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, healthPot);
-          itemList.push(potion); 
+        if (random(0, 100) > 75) {
+          let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
+          itemList.push(healthPotion); 
+        }
+        else if (random(0, 100) > 50) {
+          let manaPotion = new ManaPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
+          itemList.push(manaPotion); 
         }
         minionList.splice(i, 1);
       }
@@ -222,9 +227,13 @@ function draw() {
       archerList[i].move();
       //archerList[i].display();
       if (archerList[i].lives <= 0) {
-        if (random(0, 100) > 50) {
-          potion = new Items(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
-          itemList.push(potion); 
+        if (random(0, 100) > 75) {
+          let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
+          itemList.push(healthPotion); 
+        }
+        else if (random(0, 100) > 50) {
+          let manaPotion = new ManaPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
+          itemList.push(manaPotion); 
         }
         archerList.splice(i, 1);
       }
@@ -277,7 +286,31 @@ function draw() {
         }
       }
     }
-    
+    if (mouseIsPressed){
+      for (let i = 0; i < itemList.length; i++){
+        let iX = itemList[i].x + itemList[i].width + screenMoveX;
+        let iY = itemList[i].y + itemList[i].height + screenMoveY;
+        if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
+          if (itemList[i] === healthPot){
+            if (playerOne.health + 20 <= 100){
+              playerOne.health += 20;
+            }
+            else {
+              playerOne.health += 100 - playerOne.health;
+            }
+          }
+          else if (itemList[i] === manaPot) {
+            if (playerOne.mana + 20 <= 200){
+              playerOne.mana += 20;
+            }
+            else {
+              playerOne.mana += 200 - playerOne.mana;
+            }
+          }
+          itemList.splice(i, 1);
+        }
+      }
+    }
   }    
 
   if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
@@ -724,15 +757,29 @@ class Archers extends Minions {
 }
 
 class Items {
-  constructor(x, y, width, height, image){
+  constructor(x, y, width, height){
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.image = image;
+  }
+}
+
+class HealthPot extends Items {
+  constructor(x, y, width, height){
+    super(x, y, width, height);
   }
   display() {
-    image(this.image, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+    image(healthPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+  }
+}
+
+class ManaPot extends Items {
+  constructor(x, y, width, height){
+    super(x, y, width, height);
+  }
+  display() {
+    image(manaPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
@@ -1036,17 +1083,5 @@ function miniMap(){
 }
 
 function mouseClicked(){
-  for (let i = 0; i < itemList.length; i++){
-    let iX = itemList[i].x + itemList[i].width + screenMoveX;
-    let iY = itemList[i].y + itemList[i].height + screenMoveY;
-    if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
-      itemList.splice(i, 1);
-      if (playerOne.health + 20 <= 100){
-        playerOne.health += 20;
-      }
-      else {
-        playerOne.health += 100 - playerOne.health;
-      }
-    }
-  }
+  
 }
