@@ -95,11 +95,14 @@ let wallImg;
 let slashImg;
 
 let healthPot;
+let manaPot;
 let itemList = [];
 
 let pause = false;
 let mouseOverPause = false;
 let cursor;
+
+let textList = [];
 
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
@@ -211,11 +214,11 @@ function draw() {
       // minionList[i].display();
       if (minionList[i].lives <= 0) {
         if (random(0, 100) > 75) {
-          let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
+          let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "health");
           itemList.push(healthPotion); 
         }
         else if (random(0, 100) > 50) {
-          let manaPotion = new ManaPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3);
+          let manaPotion = new ManaPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "mana");
           itemList.push(manaPotion); 
         }
         minionList.splice(i, 1);
@@ -228,11 +231,11 @@ function draw() {
       //archerList[i].display();
       if (archerList[i].lives <= 0) {
         if (random(0, 100) > 75) {
-          let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
+          let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "health");
           itemList.push(healthPotion); 
         }
         else if (random(0, 100) > 50) {
-          let manaPotion = new ManaPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3);
+          let manaPotion = new ManaPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "mana");
           itemList.push(manaPotion); 
         }
         archerList.splice(i, 1);
@@ -291,7 +294,7 @@ function draw() {
         let iX = itemList[i].x + itemList[i].width + screenMoveX;
         let iY = itemList[i].y + itemList[i].height + screenMoveY;
         if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
-          if (itemList[i] === healthPot){
+          if (itemList[i].effect === "health"){
             if (playerOne.health + 20 <= 100){
               playerOne.health += 20;
             }
@@ -299,7 +302,7 @@ function draw() {
               playerOne.health += 100 - playerOne.health;
             }
           }
-          else if (itemList[i] === manaPot) {
+          else if (itemList[i].effect === "mana") {
             if (playerOne.mana + 20 <= 200){
               playerOne.mana += 20;
             }
@@ -309,6 +312,12 @@ function draw() {
           }
           itemList.splice(i, 1);
         }
+      }
+    }
+    for (let i = 0; i < textList.length; i++){
+      textList[i].move();
+      if (textList[i].jumpCount === 20){
+        textList.splice(i, 1);
       }
     }
   }    
@@ -335,6 +344,9 @@ function draw() {
   }
   for (let i = 0; i < enemyBulletList.length; i++){
     enemyBulletList[i].display();    
+  }
+  for (let i = 0; i < textList.length; i++){
+    textList[i].display();
   }
 
   image(cursor, mouseX, mouseY, 50*(width/1920), 50);
@@ -757,17 +769,18 @@ class Archers extends Minions {
 }
 
 class Items {
-  constructor(x, y, width, height){
+  constructor(x, y, width, height, effect){
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.effect = effect;
   }
 }
 
 class HealthPot extends Items {
-  constructor(x, y, width, height){
-    super(x, y, width, height);
+  constructor(x, y, width, height, effect){
+    super(x, y, width, height, effect);
   }
   display() {
     image(healthPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
@@ -775,11 +788,43 @@ class HealthPot extends Items {
 }
 
 class ManaPot extends Items {
-  constructor(x, y, width, height){
-    super(x, y, width, height);
+  constructor(x, y, width, height, effect){
+    super(x, y, width, height, effect);
   }
   display() {
     image(manaPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
+  }
+}
+
+class DamageText {
+  constructor(x, y, size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.jumpCount = 10;
+    this.direction = -1;
+  }
+  move(){// -1 = up, 1 = down
+    this.x += 1;
+    this.y += 0.5 * this.jumpCount * this.direction;
+    if (this.jumpCount < 0 && this.direction < 0){
+      this.direction = 1;
+    }
+    if (this.direction > 0){
+      this.jumpCount += 1;
+    }
+    else {
+      this.jumpCount -= 1;
+    }
+  }
+  display(){
+    push();
+    textSize(this.size);
+    stroke(255);
+    fill(255);
+    textAlign(CENTER);
+    text(666, this.x, this.y);
+    pop();
   }
 }
 
@@ -1083,5 +1128,6 @@ function miniMap(){
 }
 
 function mouseClicked(){
-  
+  let demo = new DamageText(width/2, height/2, 20);
+  textList.push(demo);
 }
