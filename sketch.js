@@ -15,6 +15,7 @@ let cellSize = 120;
 let gridSize = 60;
 
 
+
 let playerOne;
 let playerOnePositionX;
 let playerOnePositionY;
@@ -161,7 +162,7 @@ function setup() {
   grid = create2DArray(gridSize, gridSize);
   generateDungeon();
   spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200);
+  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
 
   playerImgList = [
     [playerLOne, playerLTwo, playerLThree, playerLFour],
@@ -192,7 +193,7 @@ function setup() {
   enemyShootLastTime = time;
   // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
   // archerList.push(archer);
-  // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 5);
+  // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
   // minionList.push(minion);
 }
 
@@ -350,7 +351,7 @@ function draw() {
   }
 
   image(cursor, mouseX, mouseY, 50*(width/1920), 50);
-  console.log(slashing, melee);
+  //console.log(textList);
 }
 
 //creating and displaying grid
@@ -390,7 +391,7 @@ function displayGrid(col, row) {
 }
 
 class Player { //player class
-  constructor(x, y, width, height, speed, shootSpeed, slashSpeed, health, mana) {
+  constructor(x, y, width, height, speed, shootSpeed, slashSpeed, health, mana, damage) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -404,6 +405,7 @@ class Player { //player class
     this.slashSpeed = slashSpeed;
     this.health = health;
     this.mana = mana;
+    this.damage = damage;
     this.positionY = floor(this.y/cellSize);
     this.positionX = floor(this.x/cellSize);
     this.facingRight = true;
@@ -481,7 +483,7 @@ class Player { //player class
   shoot() { 
     
     if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range && this.mana > 5) {
-      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1);
+      let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1, 20);
       this.mana -= 5;
       bulletList.push(playerBullet);
       playerShootLastTime = time;
@@ -520,12 +522,13 @@ class Player { //player class
 }
 
 class Bullet {
-  constructor(x, y, radius, speed, hit) {
+  constructor(x, y, radius, speed, hit, damage) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.speed = speed;
     this.hit = hit;
+    this.damage = damage;
     this.disX = mouseX - screenMoveX - playerOne.x-playerOne.width/2;
     this.disY = mouseY - screenMoveY - playerOne.y-playerOne.height/2;
     this.angle = atan2(mouseY-(playerOne.height/2+playerOne.y+screenMoveY), mouseX-(playerOne.width/2+playerOne.x+screenMoveX));
@@ -538,7 +541,9 @@ class Bullet {
     for (let i = 0; i < minionList.length; i++){
       if (this.x > minionList[i].x && this.x < minionList[i].x + minionList[i].width && this.y > minionList[i].y && this.y < minionList[i].y + minionList[i].height){
         this.hit -= 1;
-        minionList[i].lives -=1;
+        minionList[i].lives -= this.damage;
+        let attack = new DamageText(this.x, this.y, 15, this.damage);
+        textList.push(attack);
       }
     }
 
@@ -546,7 +551,9 @@ class Bullet {
     for (let i = 0; i < archerList.length; i++){
       if (this.x > archerList[i].x && this.x < archerList[i].x + archerList[i].width && this.y > archerList[i].y && this.y < archerList[i].y + archerList[i].height){
         this.hit -= 1;
-        archerList[i].lives -=1;
+        archerList[i].lives -= this.damage;
+        let attack = new DamageText(this.x, this.y, 15, this.damage);
+        textList.push(attack);
       }
     }
   }
@@ -797,10 +804,11 @@ class ManaPot extends Items {
 }
 
 class DamageText {
-  constructor(x, y, size){
+  constructor(x, y, size, value){
     this.x = x;
     this.y = y;
     this.size = size;
+    this.value = value;
     this.jumpCount = 10;
     this.direction = -1;
   }
@@ -823,7 +831,7 @@ class DamageText {
     stroke(255);
     fill(255);
     textAlign(CENTER);
-    text(666, this.x, this.y);
+    text(this.value, this.x+screenMoveX, this.y+screenMoveY);
     pop();
   }
 }
@@ -900,7 +908,7 @@ function generateBridge() {
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
   for (let i = 0; i < roomNumber; i++) {
-    generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
+    generateRoom(round(random(10, gridSize-20)), round(random(10, gridSize-20)));
     if (i > 0) {
       generateBridge();
     }
@@ -955,11 +963,11 @@ function spawnEnemies() {
       }
     }
     for (let a = 0; a < round(spaceCount/30); a++) {
-      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize*1.15/2, cellSize*1.15/2.5, 5, 5);
+      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize*1.15/2, cellSize*1.15/2.5, 5, 100);
       minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, 5, 5, 1000, 0);//enemyShootLastTime
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, 5, 100, 1000, 0);//enemyShootLastTime
       archerList.push(archer);
     }
   }  
@@ -1069,19 +1077,27 @@ function slashcollision(slasher, target) {
     if (sqrt(sq(slasher.x - slasher.x) + sq(slasher.y - slasher.y)) < cellSize *3) {
       if (collidePointArc(target[i].x+ screenMoveX, target[i].y+ screenMoveY, slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         //console.log("1");
-        target[i].lives -= 10;
+        target[i].lives -= slasher.damage;
+        let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
+        textList.push(attack);
       }
       else if (collidePointArc(target[i].x + screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         //console.log("2");
-        target[i].lives -= 10;
+        target[i].lives -= slasher.damage;
+        let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
+        textList.push(attack);
       }
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
         //console.log("3");
-        target[i].lives -= 10;
+        target[i].lives -= slasher.damage;
+        let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
+        textList.push(attack);
       }
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         //console.log("4");
-        target[i].lives -= 10;
+        target[i].lives -= slasher.damage;
+        let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
+        textList.push(attack);
       }
     }
   }
@@ -1128,6 +1144,6 @@ function miniMap(){
 }
 
 function mouseClicked(){
-  let demo = new DamageText(width/2, height/2, 20);
-  textList.push(demo);
+  // let attack = new DamageText(width/2, height/2, 15);
+  // textList.push(attack);
 }
