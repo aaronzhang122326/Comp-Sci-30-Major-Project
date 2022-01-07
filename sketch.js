@@ -13,6 +13,7 @@
 let grid;
 let cellSize = 120;
 let gridSize = 60;
+//let gridSize = 80;
 
 
 
@@ -198,6 +199,7 @@ function setup() {
 }
 
 function draw() {
+  background(48, 77, 95);
   displayGrid(gridSize, gridSize); 
   if (pause === false) {
     //displayGrid(gridSize, gridSize); 
@@ -908,7 +910,7 @@ function generateBridge() {
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
   for (let i = 0; i < roomNumber; i++) {
-    generateRoom(round(random(10, gridSize-20)), round(random(10, gridSize-20)));
+    generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
       generateBridge();
     }
