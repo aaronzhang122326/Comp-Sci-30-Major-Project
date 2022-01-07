@@ -106,6 +106,8 @@ let cursor;
 
 let textList = [];
 
+let gameRound = 1;
+
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
   floorImgTwo = loadImage("assets/floor2.PNG");
@@ -204,6 +206,16 @@ function draw() {
   if (pause === false) {
     //displayGrid(gridSize, gridSize); 
     time = millis();
+
+    if (minionList.length === 0 && archerList.length === 0){
+      gameRound += 1;
+      textSize(100);
+      stroke(255);
+      fill(255);
+      textAlign(CENTER);
+      text("Round" + gameRound, this.x+screenMoveX, this.y+screenMoveY);
+      spawnEnemies();
+    }
 
     //player movement
     playerOne.move();
