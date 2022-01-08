@@ -5,10 +5,16 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-//problems:
-//1. enemy back and forth
-//2. enemy stuck behind wall
-//3. enemy random movement
+//To do:
+//1. speed items
+//2. damage items
+//3. bullet items
+//4. enemy movement
+//5. music and sound 
+//6. health increase items (maybe)
+//7. mana increase items (maybe)
+//8. difficulty mode
+//9. spawn rounds
 
 let grid;
 let cellSize = 120;
@@ -61,6 +67,9 @@ let screenMoveY = 0;
 let time;
 
 let minionList = [];
+let minionDamage = 5;
+let minionHealth = 200;
+let minionSpeed = 5;
 let minionImgList;
 
 let hogImgPositionList;
@@ -74,6 +83,9 @@ let hogRThree;
 
 
 let archerList = [];
+let archerDamage = 5;
+let archerHealth = 100;
+let archerSpeed = 5;
 let playerShootLastTime;
 let enemyShootLastTime;
 let range = true;
@@ -107,6 +119,7 @@ let cursor;
 let textList = [];
 
 let gameRound = 1;
+let timeCount = 40;
 
 function preload() {
   floorImgOne = loadImage("assets/floor1.PNG");
@@ -206,16 +219,6 @@ function draw() {
   if (pause === false) {
     //displayGrid(gridSize, gridSize); 
     time = millis();
-
-    if (minionList.length === 0 && archerList.length === 0){
-      gameRound += 1;
-      textSize(100);
-      stroke(255);
-      fill(255);
-      textAlign(CENTER);
-      text("Round" + gameRound, this.x+screenMoveX, this.y+screenMoveY);
-      spawnEnemies();
-    }
 
     //player movement
     playerOne.move();
@@ -333,6 +336,30 @@ function draw() {
       textList[i].move();
       if (textList[i].jumpCount === 20){
         textList.splice(i, 1);
+      }
+    }
+    if (minionList.length === 0 && archerList.length === 0){
+      if (timeCount >= 0){  
+        timeCount -= 1;
+        textSize(100);
+        stroke(255);
+        fill(255);
+        textAlign(CENTER);
+        text("Round" + (gameRound+1), width/2, height/2);
+      }
+      else {
+        timeCount = 40;
+        gameRound += 1;
+
+        minionDamage = minionDamage * 2;
+        minionHealth = minionHealth * 1.5;
+        minionSpeed = minionSpeed * 1.1;
+
+        archerDamage = archerDamage * 2;
+        archerHealth = archerHealth * 1.5;
+        archerSpeed = archerSpeed * 1.1;
+
+        spawnEnemies();
       }
     }
   }    
@@ -606,13 +633,14 @@ class EnemyBullet extends Bullet {
 }
 
 class Minions {
-  constructor(x, y, width, height, speed, lives) {
+  constructor(x, y, width, height, speed, lives, damage) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.speed = speed;
     this.lives = lives;
+    this.damage = damage;
     this.attackLastTime = 0;
     this.rightFree = true;
     this.leftFree = true;
@@ -675,13 +703,13 @@ class Minions {
         if (tX - pX < this.width) {
           if (tY - pY > 0) { 
             if (tY - pY < this.height) {
-              playerOne.health -= 5;
+              playerOne.health -= this.damage;
             }
             
           }
           else {
             if (-(this.y - playerOne.y) < playerOne.height) {
-              playerOne.health -= 5;
+              playerOne.health -= this.damage;
             }
           }
         }
@@ -690,12 +718,12 @@ class Minions {
         if (-(this.x - playerOne.x) < playerOne.width) {
           if (this.y - playerOne.y > 0) { 
             if (this.y - playerOne.y < this.height) {
-              playerOne.health -= 5;
+              playerOne.health -= this.damage;
             }
           }
           else {
             if (-(this.y - playerOne.y) < playerOne.height) {
-              playerOne.health -= 5;
+              playerOne.health -= this.damage;
             }
           }
         }
@@ -772,7 +800,7 @@ class Archers extends Minions {
   }
   shoot() {    
     if (time - this.enemyShootLastTime > this.shootSpeed) {
-      let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1);
+      let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1, archerDamage);
       enemyBulletList.push(enemyBullet);
       this.enemyShootLastTime = time;
     }
@@ -977,11 +1005,11 @@ function spawnEnemies() {
       }
     }
     for (let a = 0; a < round(spaceCount/30); a++) {
-      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize*1.15/2, cellSize*1.15/2.5, 5, 100);
+      let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize*1.15/2, cellSize*1.15/2.5, minionSpeed, minionHealth, minionDamage);
       minionList.push(minion);
     }
     for (let a = 0; a < round(spaceCount/10); a++) {
-      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, 5, 100, 1000, 0);//enemyShootLastTime
+      let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, archerSpeed, archerHealth, 1000, 0);//enemyShootLastTime
       archerList.push(archer);
     }
   }  
