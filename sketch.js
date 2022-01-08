@@ -116,6 +116,8 @@ let pause = false;
 let mouseOverPause = false;
 let cursor;
 
+let startScreen = true;
+
 let textList = [];
 
 let gameRound = 1;
@@ -171,6 +173,9 @@ function preload() {
 
   healthPot = loadImage("assets/health_pot.PNG");
   manaPot = loadImage("assets/mana_pot.png");
+
+  startImg = loadImage("assets/start_screen.jpg");
+  titleImg = loadImage("assets/title.png");
 }
 
 function setup() {
@@ -214,185 +219,191 @@ function setup() {
 }
 
 function draw() {
-  background(48, 77, 95);
-  displayGrid(gridSize, gridSize); 
-  if (pause === false) {
-    //displayGrid(gridSize, gridSize); 
-    time = millis();
+  if (startScreen){
+    image(startImg, 0, 0, width, height);
+    image(titleImg, 100, 100, width/5, width/20);
+  }
+  else {
+    background(48, 77, 95);
+    displayGrid(gridSize, gridSize); 
+    if (pause === false) {
+      //displayGrid(gridSize, gridSize); 
+      time = millis();
 
-    //player movement
-    playerOne.move();
-    playerOne.shoot();
-    playerOne.slash();
-    // playerOne.display();
+      //player movement
+      playerOne.move();
+      playerOne.shoot();
+      playerOne.slash();
+      // playerOne.display();
 
-    //minion movement
+      //minion movement
+      for (let i = 0; i < minionList.length; i++) {
+        minionList[i].move();
+        // minionList[i].display();
+        if (minionList[i].lives <= 0) {
+          if (random(0, 100) > 75) {
+            let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "health");
+            itemList.push(healthPotion); 
+          }
+          else if (random(0, 100) > 50) {
+            let manaPotion = new ManaPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "mana");
+            itemList.push(manaPotion); 
+          }
+          minionList.splice(i, 1);
+        }
+      }
+
+      //archer movement
+      for (let i = 0; i < archerList.length; i++) {
+        archerList[i].move();
+        //archerList[i].display();
+        if (archerList[i].lives <= 0) {
+          if (random(0, 100) > 75) {
+            let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "health");
+            itemList.push(healthPotion); 
+          }
+          else if (random(0, 100) > 50) {
+            let manaPotion = new ManaPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "mana");
+            itemList.push(manaPotion); 
+          }
+          archerList.splice(i, 1);
+        }
+      }
+
+      //items
+      for (let i = 0; i < itemList.length; i++){
+        itemList[i].display();
+      }
+
+      //bullets splice
+      for (let i = 0; i < bulletList.length; i++){
+        bulletList[i].move();
+        //bulletList[i].display();    
+        if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
+          bulletList.splice(i, 1);
+        }
+        else if (bulletList[i].hit <= 0) {
+          bulletList.splice(i, 1);
+        }
+        else {
+          let blocks = [
+            {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
+          ]
+          if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
+            if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
+              bulletList.splice(i, 1);
+            }
+          }
+        }
+      }
+        //bullets splice
+      for (let i = 0; i < enemyBulletList.length; i++){
+        enemyBulletList[i].move();
+        //enemyBulletList[i].display();    
+        if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
+          enemyBulletList.splice(i, 1);
+        }
+        else if (enemyBulletList[i].hit <= 0) {
+          enemyBulletList.splice(i, 1);
+        }
+        else {
+          let blocks = [
+            {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
+          ]
+          if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
+            if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
+              enemyBulletList.splice(i, 1);
+            }
+          }
+        }
+      }
+      if (mouseIsPressed){
+        for (let i = 0; i < itemList.length; i++){
+          let iX = itemList[i].x + itemList[i].width + screenMoveX;
+          let iY = itemList[i].y + itemList[i].height + screenMoveY;
+          if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
+            if (itemList[i].effect === "health"){
+              if (playerOne.health + 20 <= 100){
+                playerOne.health += 20;
+              }
+              else {
+                playerOne.health += 100 - playerOne.health;
+              }
+            }
+            else if (itemList[i].effect === "mana") {
+              if (playerOne.mana + 20 <= 200){
+                playerOne.mana += 20;
+              }
+              else {
+                playerOne.mana += 200 - playerOne.mana;
+              }
+            }
+            itemList.splice(i, 1);
+          }
+        }
+      }
+      for (let i = 0; i < textList.length; i++){
+        textList[i].move();
+        if (textList[i].jumpCount === 20){
+          textList.splice(i, 1);
+        }
+      }
+      if (minionList.length === 0 && archerList.length === 0){
+        if (timeCount >= 0){  
+          timeCount -= 1;
+          textSize(100);
+          stroke(255);
+          fill(255);
+          textAlign(CENTER);
+          text("Round" + (gameRound+1), width/2, height/2);
+        }
+        else {
+          timeCount = 40;
+          gameRound += 1;
+
+          minionDamage = minionDamage * 2;
+          minionHealth = minionHealth * 1.5;
+          minionSpeed = minionSpeed * 1.1;
+
+          archerDamage = archerDamage * 2;
+          archerHealth = archerHealth * 1.5;
+          archerSpeed = archerSpeed * 1.1;
+
+          spawnEnemies();
+        }
+      }
+    }    
+
+    if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
+      mouseOverPause = true;
+    }
+    else {
+      mouseOverPause = false;
+    }
+    displayData();
+    playerOne.display();
     for (let i = 0; i < minionList.length; i++) {
-      minionList[i].move();
-      // minionList[i].display();
-      if (minionList[i].lives <= 0) {
-        if (random(0, 100) > 75) {
-          let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "health");
-          itemList.push(healthPotion); 
-        }
-        else if (random(0, 100) > 50) {
-          let manaPotion = new ManaPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "mana");
-          itemList.push(manaPotion); 
-        }
-        minionList.splice(i, 1);
-      }
+      minionList[i].display();
     }
-
-    //archer movement
     for (let i = 0; i < archerList.length; i++) {
-      archerList[i].move();
-      //archerList[i].display();
-      if (archerList[i].lives <= 0) {
-        if (random(0, 100) > 75) {
-          let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "health");
-          itemList.push(healthPotion); 
-        }
-        else if (random(0, 100) > 50) {
-          let manaPotion = new ManaPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "mana");
-          itemList.push(manaPotion); 
-        }
-        archerList.splice(i, 1);
-      }
+      archerList[i].display();
     }
-
-    //items
     for (let i = 0; i < itemList.length; i++){
       itemList[i].display();
     }
-
-    //bullets splice
     for (let i = 0; i < bulletList.length; i++){
-      bulletList[i].move();
-      //bulletList[i].display();    
-      if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
-        bulletList.splice(i, 1);
-      }
-      else if (bulletList[i].hit <= 0) {
-        bulletList.splice(i, 1);
-      }
-      else {
-        let blocks = [
-          {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
-        ]
-        if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
-          if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
-            bulletList.splice(i, 1);
-          }
-        }
-      }
+      bulletList[i].display();    
     }
-      //bullets splice
     for (let i = 0; i < enemyBulletList.length; i++){
-      enemyBulletList[i].move();
-      //enemyBulletList[i].display();    
-      if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
-        enemyBulletList.splice(i, 1);
-      }
-      else if (enemyBulletList[i].hit <= 0) {
-        enemyBulletList.splice(i, 1);
-      }
-      else {
-        let blocks = [
-          {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
-        ]
-        if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
-          if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
-            enemyBulletList.splice(i, 1);
-          }
-        }
-      }
-    }
-    if (mouseIsPressed){
-      for (let i = 0; i < itemList.length; i++){
-        let iX = itemList[i].x + itemList[i].width + screenMoveX;
-        let iY = itemList[i].y + itemList[i].height + screenMoveY;
-        if (mouseX > itemList[i].width + screenMoveX && mouseX < iX && mouseY > itemList[i].y + screenMoveY && mouseY < iY){
-          if (itemList[i].effect === "health"){
-            if (playerOne.health + 20 <= 100){
-              playerOne.health += 20;
-            }
-            else {
-              playerOne.health += 100 - playerOne.health;
-            }
-          }
-          else if (itemList[i].effect === "mana") {
-            if (playerOne.mana + 20 <= 200){
-              playerOne.mana += 20;
-            }
-            else {
-              playerOne.mana += 200 - playerOne.mana;
-            }
-          }
-          itemList.splice(i, 1);
-        }
-      }
+      enemyBulletList[i].display();    
     }
     for (let i = 0; i < textList.length; i++){
-      textList[i].move();
-      if (textList[i].jumpCount === 20){
-        textList.splice(i, 1);
-      }
+      textList[i].display();
     }
-    if (minionList.length === 0 && archerList.length === 0){
-      if (timeCount >= 0){  
-        timeCount -= 1;
-        textSize(100);
-        stroke(255);
-        fill(255);
-        textAlign(CENTER);
-        text("Round" + (gameRound+1), width/2, height/2);
-      }
-      else {
-        timeCount = 40;
-        gameRound += 1;
 
-        minionDamage = minionDamage * 2;
-        minionHealth = minionHealth * 1.5;
-        minionSpeed = minionSpeed * 1.1;
-
-        archerDamage = archerDamage * 2;
-        archerHealth = archerHealth * 1.5;
-        archerSpeed = archerSpeed * 1.1;
-
-        spawnEnemies();
-      }
-    }
-  }    
-
-  if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
-    mouseOverPause = true;
+    image(cursor, mouseX, mouseY, 50*(width/1920), 50);
+    //console.log(textList);
   }
-  else {
-    mouseOverPause = false;
-  }
-  displayData();
-  playerOne.display();
-  for (let i = 0; i < minionList.length; i++) {
-    minionList[i].display();
-  }
-  for (let i = 0; i < archerList.length; i++) {
-    archerList[i].display();
-  }
-  for (let i = 0; i < itemList.length; i++){
-    itemList[i].display();
-  }
-  for (let i = 0; i < bulletList.length; i++){
-    bulletList[i].display();    
-  }
-  for (let i = 0; i < enemyBulletList.length; i++){
-    enemyBulletList[i].display();    
-  }
-  for (let i = 0; i < textList.length; i++){
-    textList[i].display();
-  }
-
-  image(cursor, mouseX, mouseY, 50*(width/1920), 50);
-  //console.log(textList);
 }
 
 //creating and displaying grid
@@ -1156,6 +1167,9 @@ function keyPressed() {
       melee = false;
       range = true;
     }
+  }
+  if (keyCode === 13){
+    startScreen = false;
   }
 }
 
