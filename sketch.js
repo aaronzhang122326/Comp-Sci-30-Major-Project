@@ -113,8 +113,10 @@ let manaPot;
 let itemList = [];
 
 let pause = false;
+let gameOver = false;
 let mouseOverPause = false;
 let cursor;
+let score = 0;
 
 let startScreen = true;
 let modeSelection = false;
@@ -264,17 +266,10 @@ function draw() {
         textAlign(CENTER);
         text(selectionList[i][4], selectionList[i][0]+selectionList[i][2]/2,selectionList[i][1]+selectionList[i][3]/2);
       }
-      
-      // rect(width/2-width/16, height/3, width/8, height/8);
-      // rect(4*width/6-width/16, height/3, width/8, height/8);
-      // rect(2*width/6-width/16, height/3, width/8, height/8);
-      // rect(width/6-width/16, height/3, width/8, height/8);
-      // rect(5*width/6-width/16, height/3, width/8, height/8);
-
     }
 
   }
-  else {
+  if (gameOver === false && startScreen === false) {
     background(48, 77, 95);
     displayGrid(gridSize, gridSize); 
     if (pause === false) {
@@ -301,6 +296,7 @@ function draw() {
             itemList.push(manaPotion); 
           }
           minionList.splice(i, 1);
+          score += 20;
         }
       }
 
@@ -318,6 +314,7 @@ function draw() {
             itemList.push(manaPotion); 
           }
           archerList.splice(i, 1);
+          score += 20;
         }
       }
 
@@ -457,6 +454,17 @@ function draw() {
 
     image(cursor, mouseX, mouseY, 50*(width/1920), 50);
     //console.log(textList);
+
+    if (playerOne.health <= 0){
+      gameOver = true;
+    }
+  }
+  if (gameOver){
+    textSize(100);
+    stroke(255);
+    fill(255);
+    textAlign(CENTER);
+    text("GAME OVER", width/2, height/2);
   }
 }
 
@@ -1101,6 +1109,14 @@ function displayData() {
   rect(1810*(width/1920), 60, 20*(width/1920), 80);
 
   miniMap();
+  push();
+  textSize(50);
+  stroke(255);
+  fill(255);
+  textAlign(CENTER);
+  text("TIME: " + round(time/1000), 7*width/9, height/10);
+  text("SCORE: " + score, 5*width/9, height/10);
+  pop();
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
     noCursor();
   }
@@ -1212,19 +1228,24 @@ function slashcollision(slasher, target) {
 
 function keyPressed() {
   if (keyCode === 32) {
-    if (range) {
-      range = false;
-      melee = true;
-    }
+    if (startScreen === false && gameOver === false){
+      if (range) {
+        range = false;
+        melee = true;
+      }
 
-    else if (melee) {
-      melee = false;
-      range = true;
+      else if (melee) {
+        melee = false;
+        range = true;
+      }
     }
-  }
-  if (keyCode === 32){
-    //startScreen = false;
-    modeSelection = true;
+    else if (startScreen){
+      modeSelection = true;
+    }
+    else if (gameOver){
+      gameOver = false;
+      startScreen = true;
+    }
   }
 }
 
