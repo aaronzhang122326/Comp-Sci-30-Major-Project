@@ -190,10 +190,10 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  grid = create2DArray(gridSize, gridSize);
-  generateDungeon();
-  spawnLocation(playerOnePositionX, playerOnePositionY);
-  playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
+  // grid = create2DArray(gridSize, gridSize);
+  // generateDungeon();
+  // spawnLocation(playerOnePositionX, playerOnePositionY);
+  playerOne = new Player(0, 0, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
 
   playerImgList = [
     [playerLOne, playerLTwo, playerLThree, playerLFour],
@@ -217,8 +217,8 @@ function setup() {
   archerImgPositionList = [0, 10, 0];
 
   //spawnEnemies();
-  screenMoveX -= round(width/2+(playerOne.x-width));
-  screenMoveY -= round(height/2+(playerOne.y-height));
+  // screenMoveX -= round(width/2+(playerOne.x-width));
+  // screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
   playerShootLastTime = time;
   enemyShootLastTime = time;
@@ -249,6 +249,19 @@ function draw() {
           if (mouseIsPressed){
             modeSelection = false;
             startScreen = false;
+
+            grid = create2DArray(gridSize, gridSize);
+            generateDungeon();
+            spawnLocation(playerOnePositionX, playerOnePositionY);
+            // playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
+            playerOne.x = playerOnePositionX;
+            playerOne.y = playerOnePositionY;
+            spawnEnemies();
+            // screenMoveX -= round(width/2+(playerOne.x-width));
+            // screenMoveY -= round(height/2+(playerOne.y-height));
+            screenMoveX = -round(width/2+(playerOne.x-width));
+            screenMoveY = -round(height/2+(playerOne.y-height));
+
             for (let a = 0; a < dataList.length; a++){
               for (let b = 0; b < dataList[a].length; b++){
                 dataList[a][b] = dataList[a][b]*selectionList[i][5];
@@ -1245,6 +1258,8 @@ function keyPressed() {
     else if (gameOver){
       gameOver = false;
       startScreen = true;
+      playerOne.health = 100;
+      playerOne.mana = 200;
     }
   }
 }
