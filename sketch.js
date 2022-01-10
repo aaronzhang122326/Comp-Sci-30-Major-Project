@@ -13,8 +13,6 @@
 //5. music and sound 
 //6. health increase items (maybe)
 //7. mana increase items (maybe)
-//8. difficulty mode
-//9. spawn rounds
 
 let grid;
 let cellSize = 120;
@@ -65,6 +63,7 @@ let iCount = 0;
 let screenMoveX = 0;
 let screenMoveY = 0;
 let time;
+let lastTime = 0;
 
 let minionList = [];
 // let minionDamage = 5;
@@ -242,6 +241,15 @@ function draw() {
     if (round(frameCount/50) % 2 === 0 && modeSelection === false){
       image(pressToStartImg, width/2-width/10, 8*height/10, width/5, width/20);
     } 
+    dataList = [
+      [5, 200], 
+      [5, 100],
+    ];
+    minionList = [];
+    archerList = [];
+    itemList = [];
+    roomList = [];
+    iCount = 0;
     if (modeSelection){
       for (let i = 0; i < selectionList.length; i++){    
         if (mouseOverRect(selectionList[i][0],selectionList[i][1],selectionList[i][2],selectionList[i][3])){
@@ -249,7 +257,7 @@ function draw() {
           if (mouseIsPressed){
             modeSelection = false;
             startScreen = false;
-
+            lastTime += time;
             grid = create2DArray(gridSize, gridSize);
             generateDungeon();
             spawnLocation(playerOnePositionX, playerOnePositionY);
@@ -287,7 +295,7 @@ function draw() {
     displayGrid(gridSize, gridSize); 
     if (pause === false) {
       //displayGrid(gridSize, gridSize); 
-      time = millis();
+      time = millis() - lastTime;
 
       //player movement
       playerOne.move();
@@ -465,7 +473,7 @@ function draw() {
       textList[i].display();
     }
 
-    image(cursor, mouseX, mouseY, 50*(width/1920), 50);
+    // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
     //console.log(textList);
 
     if (playerOne.health <= 0){
@@ -478,6 +486,12 @@ function draw() {
     fill(255);
     textAlign(CENTER);
     text("GAME OVER", width/2, height/2);
+  }
+  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
+    noCursor();
+  }
+  if (gameOver === false){
+    image(cursor, mouseX, mouseY, 50*(width/1920), 50);
   }
 }
 
@@ -1035,6 +1049,7 @@ function generateBridge() {
 
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
+  console.log(roomNumber);
   for (let i = 0; i < roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
@@ -1130,9 +1145,9 @@ function displayData() {
   text("TIME: " + round(time/1000), 7*width/9, height/10);
   text("SCORE: " + score, 5*width/9, height/10);
   pop();
-  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
-    noCursor();
-  }
+  // if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
+  //   noCursor();
+  // }
   // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
 }
 
@@ -1272,6 +1287,8 @@ function mousePressed(){
   if (mouseOverPause) {
     pause = !pause;
   }
+  console.log(millis());
+  console.log(lastTime);
 }
 
 function miniMap(){
