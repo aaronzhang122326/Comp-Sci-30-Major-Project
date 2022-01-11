@@ -14,6 +14,8 @@
 //6. health increase items (maybe)
 //7. mana increase items (maybe)
 
+//fix lastShoot
+
 let grid;
 let cellSize = 120;
 let gridSize = 60;
@@ -250,6 +252,9 @@ function draw() {
     itemList = [];
     roomList = [];
     iCount = 0;
+    playerShootLastTime = 0;
+    enemyShootLastTime = 0;
+
     if (modeSelection){
       for (let i = 0; i < selectionList.length; i++){    
         if (mouseOverRect(selectionList[i][0],selectionList[i][1],selectionList[i][2],selectionList[i][3])){
@@ -257,14 +262,16 @@ function draw() {
           if (mouseIsPressed){
             modeSelection = false;
             startScreen = false;
-            lastTime += time;
+            lastTime = millis();
+            score = 0;
+            gameRound = 0;
             grid = create2DArray(gridSize, gridSize);
             generateDungeon();
             spawnLocation(playerOnePositionX, playerOnePositionY);
             // playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
             playerOne.x = playerOnePositionX;
             playerOne.y = playerOnePositionY;
-            spawnEnemies();
+            //spawnEnemies();
             // screenMoveX -= round(width/2+(playerOne.x-width));
             // screenMoveY -= round(height/2+(playerOne.y-height));
             screenMoveX = -round(width/2+(playerOne.x-width));
@@ -452,7 +459,7 @@ function draw() {
     else {
       mouseOverPause = false;
     }
-    displayData();
+    
     playerOne.display();
     for (let i = 0; i < minionList.length; i++) {
       minionList[i].display();
@@ -472,6 +479,7 @@ function draw() {
     for (let i = 0; i < textList.length; i++){
       textList[i].display();
     }
+    displayData();
 
     // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
     //console.log(textList);
@@ -1117,8 +1125,7 @@ function spawnEnemies() {
 }
 
 function displayData() {
-  //image(playerData, 50, 50, 165*1.25, 76*1.25);
-  if (playerOne.health >= 0) {
+  if (playerOne.health > 0) {
     image(health, 105*(width/1920), 67, playerOne.health*3.1*(width/1920), 42);
   }
   if (playerOne.mana >= 0) {
