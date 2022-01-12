@@ -125,6 +125,8 @@ let dataList = [
   [5, 200], 
   [5, 100],
 ];
+let infoList;
+let helpPage = false;
 //minionDamage, minionHealth, minionSpeed, 
 //archerDamage, archerHealth, archerSpeed
 let textList = [];
@@ -233,7 +235,11 @@ function setup() {
   pauseSelectionList = [
     [3*width/8-width/16, height/3, width/8, height/8, "Home"],    
     [5*width/8-width/16, height/3, width/8, height/8, "Resume"],  
-  ]
+  ];
+
+  infoList = [
+    [width/8-width/16, 2*height/3, width/8, height/8, "Info", "Exit"],   
+  ];
   // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
   // archerList.push(archer);
   // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
@@ -247,6 +253,26 @@ function draw() {
     if (round(frameCount/50) % 2 === 0 && modeSelection === false){
       image(pressToStartImg, width/2-width/10, 8*height/10, width/5, width/20);
     } 
+    if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
+      fill("red");
+    }
+    else {
+      fill("grey");
+    }
+    if (modeSelection === false) {
+      rect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3]);
+      textSize(50);
+      stroke(255);
+      fill(255);
+      textAlign(CENTER);
+      // text(infoList[0][4], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
+      if (helpPage === false){
+        text(infoList[0][4], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
+      } 
+      else {
+        text(infoList[0][5], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
+      }
+    }
     dataList = [
       [5, 200], 
       [5, 100],
@@ -258,6 +284,20 @@ function draw() {
     iCount = 0;
     playerShootLastTime = 0;
     enemyShootLastTime = 0;
+
+    if (helpPage){
+      textSize(50);
+      stroke(255);
+      fill(255);
+      textAlign(CENTER);
+      text("1", width/2, height/2, width - width/8, height-height/8);
+      //text(infoList[0][5], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
+      // if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
+      //   if (mouseIsPressed){
+      //     helpPage = false;
+      //   }
+      //}
+    }
 
     if (modeSelection){
       for (let i = 0; i < selectionList.length; i++){    
@@ -461,12 +501,10 @@ function draw() {
           fill("red");
           if (mouseIsPressed){
             if (pauseSelectionList[i][4] === "Home"){
-              console.log(1);
               pause = false;
               startScreen = true;
             }
             else if (pauseSelectionList[i][4] === "Resume"){
-              console.log(2);
               pause = false;
             }
           }
@@ -1090,7 +1128,6 @@ function generateBridge() {
 
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
-  console.log(roomNumber);
   for (let i = 0; i < roomNumber; i++) {
     generateRoom(round(random(1, gridSize-10)), round(random(1, gridSize-10)));
     if (i > 0) {
@@ -1327,8 +1364,9 @@ function mousePressed(){
   if (mouseOverPause) {
     pause = !pause;
   }
-  console.log(millis());
-  console.log(lastTime);
+  if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
+    helpPage = !helpPage;
+  }
 }
 
 function miniMap(){
