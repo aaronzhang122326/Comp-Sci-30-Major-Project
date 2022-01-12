@@ -9,7 +9,6 @@
 //1. speed items
 //2. damage items
 //3. bullet items
-//4. enemy movement
 //5. music and sound 
 //6. health increase items (maybe)
 //7. mana increase items (maybe)
@@ -230,6 +229,11 @@ function setup() {
     [5*width/8-width/16, height/3, width/8, height/8, "Hard", 2],    
     [7*width/8-width/16, height/3, width/8, height/8, "", 20],
   ];
+
+  pauseSelectionList = [
+    [3*width/8-width/16, height/3, width/8, height/8, "Home"],    
+    [5*width/8-width/16, height/3, width/8, height/8, "Resume"],  
+  ]
   // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
   // archerList.push(archer);
   // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
@@ -265,6 +269,8 @@ function draw() {
             lastTime = millis();
             score = 0;
             gameRound = 0;
+            playerOne.health = 100;
+            playerOne.mana = 200;
             grid = create2DArray(gridSize, gridSize);
             generateDungeon();
             spawnLocation(playerOnePositionX, playerOnePositionY);
@@ -447,6 +453,33 @@ function draw() {
 
           spawnEnemies();
         }
+      }
+    }
+    else {
+      for (let i = 0; i < pauseSelectionList.length; i++){    
+        if (mouseOverRect(pauseSelectionList[i][0],pauseSelectionList[i][1],pauseSelectionList[i][2],pauseSelectionList[i][3])){
+          fill("red");
+          if (mouseIsPressed){
+            if (pauseSelectionList[i][4] === "Home"){
+              console.log(1);
+              pause = false;
+              startScreen = true;
+            }
+            else if (pauseSelectionList[i][4] === "Resume"){
+              console.log(2);
+              pause = false;
+            }
+          }
+        }
+        else {
+          fill("grey");
+        }
+        rect(pauseSelectionList[i][0],pauseSelectionList[i][1],pauseSelectionList[i][2],pauseSelectionList[i][3]);
+        textSize(50);
+        stroke(255);
+        fill(255);
+        textAlign(CENTER);
+        text(pauseSelectionList[i][4], pauseSelectionList[i][0]+pauseSelectionList[i][2]/2,pauseSelectionList[i][1]+pauseSelectionList[i][3]/2);
       }
     }    
 
@@ -872,11 +905,11 @@ class Archers extends Minions {
     this.facingRight = !this.facingLeft; 
   }
   move() {
-    if (this.x < playerOne.x) {
+    if (this.x + this.speed < playerOne.x) {
       this.facingLeft = false;
       this.facingRight = true;
     }
-    else if (this.x > playerOne.x) {
+    else if (this.x - this.speed > playerOne.x) {
       this.facingLeft = true;
       this.facingRight = false;
     }
@@ -884,16 +917,16 @@ class Archers extends Minions {
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
       this.walkCount += 1;
       movementCheck(this);
-      if (this.x < playerOne.x && this.rightFree) {
+      if (this.x + this.speed < playerOne.x && this.rightFree) {
         this.x += this.speed;
       }
-      else if (this.x > playerOne.x && this.leftFree) {
+      else if (this.x - this.speed > playerOne.x && this.leftFree) {
         this.x -= this.speed;
       }
-      if (this.y < playerOne.y && this.downFree) {
+      if (this.y + this.speed < playerOne.y && this.downFree) {
         this.y += this.speed;
       }
-      else if (this.y > playerOne.y && this.upFree) {
+      else if (this.y - this.speed > playerOne.y && this.upFree) {
         this.y -= this.speed;
       }
       if (this.walkCount >= 18) {
@@ -1280,8 +1313,8 @@ function keyPressed() {
     else if (gameOver){
       gameOver = false;
       startScreen = true;
-      playerOne.health = 100;
-      playerOne.mana = 200;
+      //playerOne.health = 100;
+      //playerOne.mana = 200;
     }
   }
 }
