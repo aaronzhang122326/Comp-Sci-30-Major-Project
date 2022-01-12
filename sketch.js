@@ -108,6 +108,8 @@ let floorImgFour;
 let wallImg;
 let slashImg;
 
+let combatMusic;
+
 let healthPot;
 let manaPot;
 let itemList = [];
@@ -188,6 +190,11 @@ function preload() {
   startImg = loadImage("assets/start_screen.jpg");
   titleImg = loadImage("assets/title.png");
   pressToStartImg = loadImage("assets/press_to_start.png");
+
+  //music
+  soundFormats('ogg');
+  combatMusic = loadSound("assets/combat_music.mp3");
+  mysteryMusic = loadSound("assets/mysterious_music.mp3");
 }
 
 function setup() {
@@ -244,6 +251,7 @@ function setup() {
   // archerList.push(archer);
   // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
   // minionList.push(minion);
+  mysteryMusic.loop();
 }
 
 function draw() {
