@@ -110,6 +110,8 @@ let slashImg;
 
 let combatMusic;
 let mysteryMusic;
+let playingOne = false;
+let playingTwo = false;
 
 let healthPot;
 let manaPot;
@@ -193,12 +195,13 @@ function preload() {
   pressToStartImg = loadImage("assets/press_to_start.png");
 
   //music
-  soundFormats('ogg');
+  soundFormats("ogg");
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
 }
 
 function setup() {
+  //getAudioContext().resume();
   createCanvas(windowWidth, windowHeight);
   // grid = create2DArray(gridSize, gridSize);
   // generateDungeon();
@@ -252,11 +255,16 @@ function setup() {
   // archerList.push(archer);
   // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
   // minionList.push(minion);
-  mysteryMusic.loop();
+  //mysteryMusic.loop();
+  //combatMusic.loop();
 }
 
 function draw() {
   if (startScreen){
+    if (playingOne === false && mouseIsPressed) {
+      mysteryMusic.loop();
+      playingOne = true;
+    }
     image(startImg, 0, 0, width, height);
     image(titleImg, 100, 100, width/5, width/20);
     if (round(frameCount/50) % 2 === 0 && modeSelection === false){
@@ -353,6 +361,12 @@ function draw() {
 
   }
   if (gameOver === false && startScreen === false) {
+    if (playingTwo === false){      
+      mysteryMusic.pause();
+      combatMusic.loop();
+      playingTwo = true;
+      playingOne = false;
+    }
     background(48, 77, 95);
     displayGrid(gridSize, gridSize); 
     if (pause === false) {
@@ -566,6 +580,8 @@ function draw() {
 
     if (playerOne.health <= 0){
       gameOver = true;
+      playingTwo = false;
+      combatMusic.pause();
     }
   }
   if (gameOver){
@@ -1363,6 +1379,7 @@ function keyPressed() {
       //playerOne.mana = 200;
     }
   }
+  //mysteryMusic.pause();
 }
 
 function mousePressed(){
@@ -1404,4 +1421,8 @@ function mouseOverRect(x, y, rectWidth, rectHeight){
     return true;
   }
   return false;
+}
+
+function touchStarted() {
+  getAudioContext().resume();
 }
