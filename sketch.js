@@ -109,6 +109,7 @@ let wallImg;
 let slashImg;
 
 let combatMusic;
+let mysteryMusic;
 
 let healthPot;
 let manaPot;
