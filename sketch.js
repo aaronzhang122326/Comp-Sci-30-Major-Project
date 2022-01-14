@@ -110,6 +110,11 @@ let slashImg;
 
 let combatMusic;
 let mysteryMusic;
+
+let soundList = [];
+let slashSound;
+let shootSound;
+
 let playingOne = false;
 let playingTwo = false;
 
@@ -198,6 +203,11 @@ function preload() {
   soundFormats("ogg");
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
+
+  slashSound = loadSound("assets/slash_sound.mp3");
+  shootSound = loadSound("assets/shoot_sound.mp3");
+
+  
 }
 
 function setup() {
@@ -573,6 +583,14 @@ function draw() {
     for (let i = 0; i < textList.length; i++){
       textList[i].display();
     }
+    for (let i = 0; i < soundList.length; i++){
+      if (soundList[i][1] + soundList[i][2] > time){
+        soundList[i][0].play();
+      }
+      else {
+        soundList.splice(i, 1);
+      }
+    }
     displayData();
 
     // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
@@ -726,12 +744,13 @@ class Player { //player class
   }
 
   shoot() { 
-    
     if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range && this.mana > 5) {
       let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1, 20);
       this.mana -= 5;
       bulletList.push(playerBullet);
       playerShootLastTime = time;
+      soundList.push([shootSound, time, 1]);
+      // shootSound.play();
     }
   }
   slash(){ 
@@ -748,6 +767,8 @@ class Player { //player class
       //rotate(this.angle);
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
+      soundList.push(slashSound, time, 1.5);
+      //slashSound.play();
       pop();
 
 
