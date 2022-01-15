@@ -110,10 +110,13 @@ let slashImg;
 
 let combatMusic;
 let mysteryMusic;
+let gameoverMusic;
+
 
 let soundList = [];
 let slashSound;
 let shootSound;
+let laserSound;
 
 let playingOne = false;
 let playingTwo = false;
@@ -137,8 +140,7 @@ let dataList = [
 ];
 let infoList;
 let helpPage = false;
-//minionDamage, minionHealth, minionSpeed, 
-//archerDamage, archerHealth, archerSpeed
+
 let textList = [];
 
 let gameRound = 0;
@@ -203,9 +205,11 @@ function preload() {
   soundFormats("ogg");
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
+  
 
   slashSound = loadSound("assets/slash_sound.mp3");
   shootSound = loadSound("assets/shoot_sound.mp3");
+  laserSound = loadSound("assets/laser.mp3");
 
   
 }
@@ -767,10 +771,9 @@ class Player { //player class
       //rotate(this.angle);
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
-      soundList.push(slashSound, time, 1.5);
       //slashSound.play();
       pop();
-
+      soundList.push([slashSound, time, 1.5]);
 
       // push();
       // translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
@@ -1028,6 +1031,7 @@ class Archers extends Minions {
       let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1, dataList[1][0]);
       enemyBulletList.push(enemyBullet);
       this.enemyShootLastTime = time;
+      soundList.push([laserSound, time, 1]);
     }
   }
   display() {
