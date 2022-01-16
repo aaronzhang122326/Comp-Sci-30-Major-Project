@@ -317,11 +317,20 @@ function draw() {
     enemyShootLastTime = 0;
 
     if (helpPage){
-      textSize(50);
+      textSize(25);
       stroke(255);
       fill(255);
-      textAlign(CENTER);
-      text("1", width/2, height/2, width - width/8, height-height/8);
+      textAlign(LEFT);//- width/8
+      text("Instructions:", width/4, 3*height/16, width, height-height/8);
+      text("Defeat Enemies and Survive for as Long as You Can. Enemies Become Stronger each Round!", width/4, 4*height/16, width, height-height/8);
+
+      text("How to Play:", width/4, 6*height/16, width - width/8, height-height/8);
+      text("WASD to move", width/4, 7*height/16, width - width/8, height-height/8);
+      text("Left Click Mouse to attack", width/4, 8*height/16, width - width/8, height-height/8);
+      text("Left Click Items to Use", width/4, 9*height/16, width - width/8, height-height/8);
+      text("Space Bar to Switch Weapons ", width/4, 10*height/16, width - width/8, height-height/8);
+
+
       //text(infoList[0][5], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
       // if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
       //   if (mouseIsPressed){
@@ -514,7 +523,7 @@ function draw() {
           stroke(255);
           fill(255);
           textAlign(CENTER);
-          text("Round" + (gameRound+1), width/2, height/2);
+          text("Round " + (gameRound+1), width/2, height/2);
         }
         else {
           timeCount = 40;
@@ -612,6 +621,9 @@ function draw() {
     fill(255);
     textAlign(CENTER);
     text("GAME OVER", width/2, height/2);
+    if (round(frameCount/50) % 2 === 0){
+      image(pressToStartImg, width/2-width/10, 8*height/10, width/5, width/20);
+    } 
   }
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
     noCursor();
@@ -1434,6 +1446,15 @@ function miniMap(){
   }
   fill("red");
   rect((playerOne.x/24+1550)*(width/1920), playerOne.y/24+170, playerOne.width/24*(width/1920), playerOne.height/24);
+  if (round(frameCount/50) % 2 === 0 && minionList.length+archerList.length <= 15){
+    push();
+    textSize(25);
+    stroke(255);
+    fill(255);
+    textAlign(LEFT);
+    text("Find and Defeat Remaining Enemies!", 1550*(width/1920)-50, 170+grid.length*(cellSize/24));
+    pop();
+  } 
 }
 
 function mouseClicked(){
