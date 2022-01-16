@@ -18,9 +18,6 @@
 let grid;
 let cellSize = 120;
 let gridSize = 60;
-//let gridSize = 80;
-
-
 
 let playerOne;
 let playerOnePositionX;
@@ -67,8 +64,6 @@ let time;
 let lastTime = 0;
 
 let minionList = [];
-// let minionDamage = 5;
-// let minionHealth = 200;
 let minionSpeed = 5;
 let minionImgList;
 
@@ -83,8 +78,6 @@ let hogRThree;
 
 
 let archerList = [];
-// let archerDamage = 5;
-// let archerHealth = 100;
 let archerSpeed = 5;
 let playerShootLastTime;
 let enemyShootLastTime;
@@ -215,11 +208,7 @@ function preload() {
 }
 
 function setup() {
-  //getAudioContext().resume();
   createCanvas(windowWidth, windowHeight);
-  // grid = create2DArray(gridSize, gridSize);
-  // generateDungeon();
-  // spawnLocation(playerOnePositionX, playerOnePositionY);
   playerOne = new Player(0, 0, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
 
   playerImgList = [
@@ -243,9 +232,6 @@ function setup() {
 
   archerImgPositionList = [0, 10, 0];
 
-  //spawnEnemies();
-  // screenMoveX -= round(width/2+(playerOne.x-width));
-  // screenMoveY -= round(height/2+(playerOne.y-height));
   time = millis();
   playerShootLastTime = time;
   enemyShootLastTime = time;
@@ -265,12 +251,6 @@ function setup() {
   infoList = [
     [width/8-width/16, 2*height/3, width/8, height/8, "Info", "Exit"],   
   ];
-  // let archer = new Archers(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2, 5, 5);
-  // archerList.push(archer);
-  // let minion = new Minions(playerOne.x, playerOne.y+200, cellSize/2, cellSize/2.5, 5, 100);
-  // minionList.push(minion);
-  //mysteryMusic.loop();
-  //combatMusic.loop();
 }
 
 function draw() {
@@ -296,7 +276,6 @@ function draw() {
       stroke(255);
       fill(255);
       textAlign(CENTER);
-      // text(infoList[0][4], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
       if (helpPage === false){
         text(infoList[0][4], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
       } 
@@ -320,23 +299,14 @@ function draw() {
       textSize(25);
       stroke(255);
       fill(255);
-      textAlign(LEFT);//- width/8
+      textAlign(LEFT);
       text("Instructions:", width/4, 3*height/16, width, height-height/8);
       text("Defeat Enemies and Survive for as Long as You Can. Enemies Become Stronger each Round!", width/4, 4*height/16, width, height-height/8);
-
       text("How to Play:", width/4, 6*height/16, width - width/8, height-height/8);
       text("WASD to move", width/4, 7*height/16, width - width/8, height-height/8);
       text("Left Click Mouse to attack", width/4, 8*height/16, width - width/8, height-height/8);
-      text("Left Click Items to Use", width/4, 9*height/16, width - width/8, height-height/8);
+      text("Hold and hover mouse over item to use", width/4, 9*height/16, width - width/8, height-height/8);
       text("Space Bar to Switch Weapons ", width/4, 10*height/16, width - width/8, height-height/8);
-
-
-      //text(infoList[0][5], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
-      // if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
-      //   if (mouseIsPressed){
-      //     helpPage = false;
-      //   }
-      //}
     }
 
     if (modeSelection){
@@ -354,12 +324,8 @@ function draw() {
             grid = create2DArray(gridSize, gridSize);
             generateDungeon();
             spawnLocation(playerOnePositionX, playerOnePositionY);
-            // playerOne = new Player(playerOnePositionX, playerOnePositionY, cellSize/1.75, cellSize/1.75, 10, 50, 250, 100, 200, 20);
             playerOne.x = playerOnePositionX;
             playerOne.y = playerOnePositionY;
-            //spawnEnemies();
-            // screenMoveX -= round(width/2+(playerOne.x-width));
-            // screenMoveY -= round(height/2+(playerOne.y-height));
             screenMoveX = -round(width/2+(playerOne.x-width));
             screenMoveY = -round(height/2+(playerOne.y-height));
 
@@ -392,20 +358,17 @@ function draw() {
     }
     background(48, 77, 95);
     displayGrid(gridSize, gridSize); 
-    if (pause === false) {
-      //displayGrid(gridSize, gridSize); 
+    if (pause === false) { 
       time = millis() - lastTime;
 
       //player movement
       playerOne.move();
       playerOne.shoot();
       playerOne.slash();
-      // playerOne.display();
 
       //minion movement
       for (let i = 0; i < minionList.length; i++) {
         minionList[i].move();
-        // minionList[i].display();
         if (minionList[i].lives <= 0) {
           if (random(0, 100) > 75) {
             let healthPotion = new HealthPot(minionList[i].x, minionList[i].y, 56/3*(width/1920), 77/3, "health");
@@ -423,7 +386,6 @@ function draw() {
       //archer movement
       for (let i = 0; i < archerList.length; i++) {
         archerList[i].move();
-        //archerList[i].display();
         if (archerList[i].lives <= 0) {
           if (random(0, 100) > 75) {
             let healthPotion = new HealthPot(archerList[i].x, archerList[i].y, 56/3*(width/1920), 77/3, "health");
@@ -446,7 +408,6 @@ function draw() {
       //bullets splice
       for (let i = 0; i < bulletList.length; i++){
         bulletList[i].move();
-        //bulletList[i].display();    
         if (bulletList[i].x + screenMoveX < 0 || bulletList[i].x + screenMoveX > width || bulletList[i].y < 0 || bulletList[i].y + bulletList[i].height > height){
           bulletList.splice(i, 1);
         }
@@ -464,10 +425,8 @@ function draw() {
           }
         }
       }
-        //bullets splice
       for (let i = 0; i < enemyBulletList.length; i++){
-        enemyBulletList[i].move();
-        //enemyBulletList[i].display();    
+        enemyBulletList[i].move(); 
         if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
           enemyBulletList.splice(i, 1);
         }
@@ -566,10 +525,6 @@ function draw() {
         text(pauseSelectionList[i][4], pauseSelectionList[i][0]+pauseSelectionList[i][2]/2,pauseSelectionList[i][1]+pauseSelectionList[i][3]/2);
       }
     }    
-
-    // if (mouseX > 1750*(width/1920) && mouseX < 1850*(width/1920) && mouseY > 50 && mouseY < 150) {
-    //   mouseOverPause = true;
-    // }
     if (mouseOverRect(1750*(width/1920), 100*(width/1920), 50, 100)){
       mouseOverPause = true;
     }
@@ -605,9 +560,6 @@ function draw() {
       }
     }
     displayData();
-
-    // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
-    //console.log(textList);
 
     if (playerOne.health <= 0){
       gameOver = true;
@@ -669,7 +621,7 @@ function displayGrid(col, row) {
   }
 }
 
-class Player { //player class
+class Player {
   constructor(x, y, width, height, speed, shootSpeed, slashSpeed, health, mana, damage) {
     this.x = x;
     this.y = y;
@@ -748,15 +700,10 @@ class Player { //player class
     }
     angleMode(DEGREES);
     push();
-    //let angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
     translate(this.x+this.width/2+screenMoveX, this.y+this.height/1.5+screenMoveY);
     rotate(this.angle);
     image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
     pop();
-
-    
-    //fill("red");
-    //rect(this.x + screenMoveX, this.y+ screenMoveY, this.width, this.height);
   }
 
   shoot() { 
@@ -766,7 +713,6 @@ class Player { //player class
       bulletList.push(playerBullet);
       playerShootLastTime = time;
       soundList.push([shootSound, time, 1]);
-      // shootSound.play();
     }
   }
   slash(){ 
@@ -777,21 +723,12 @@ class Player { //player class
       slashAngle = atan2(mouseY - (this.y + screenMoveY + this.height/2), mouseX - (this.x + screenMoveX + this.width/2));
     }
     if (slashing & melee) {
-      //console.log("1");
       push();
       translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      //rotate(this.angle);
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
-      //slashSound.play();
       pop();
       soundList.push([slashSound, time, 1.5]);
-
-      // push();
-      // translate(this.x + screenMoveX + this.width/2, this.y + screenMoveY + this.height/2);
-      // rotate(slashAngle + 345);
-      // arc(0, 0, arcRadius*2, arcRadius*2, -ARC_ANGLE/2, ARC_ANGLE/2);
-      // pop(); //change later
       slashcollision(this, minionList);
       slashcollision(this, archerList);
     }
@@ -839,10 +776,8 @@ class Bullet {
     }
   }
   display() {
-    // fill("red");
-    // circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
     angleMode(DEGREES);
-    push();//+playerOne.width/2, +playerOne.height/1.5
+    push();
     translate(this.x+screenMoveX, this.y+screenMoveY);
     rotate(this.angle);
     image(bullet, -this.radius, -this.radius/2, this.radius * 2, this.radius);
@@ -866,8 +801,6 @@ class EnemyBullet extends Bullet {
     }
   }
   display() {
-    // fill("green");
-    // circle(this.x + screenMoveX, this.y + screenMoveY, this.radius);
     image(enemyBullet, this.x + screenMoveX, this.y + screenMoveY, this.radius*2);
   }
 }
@@ -933,11 +866,6 @@ class Minions {
       }
     } 
 
-    if (this.directionCount < 2) {
-      //console.log(this.x, this.y);
-      
-    }
-
     if (time - this.attackLastTime > 1000) {
       if (tX - pX > 0) { //checking for enemy character coliision
         if (tX - pX < this.width) {
@@ -981,16 +909,12 @@ class Minions {
     if (this.facingRight) {
       image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
-    // fill("green");
-    // rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
 class Archers extends Minions {
   constructor(x, y, width, height, speed, lives, shootSpeed, ShootLastTime) {
     super(x, y, width, height, speed, lives);
-    // this.x = x;
-    // this.y = y;
     this.shootSpeed = shootSpeed;
     this.enemyShootLastTime = ShootLastTime;
     this.walkCount = 0;
@@ -1034,7 +958,6 @@ class Archers extends Minions {
     } 
     else if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10){
       this.shoot();
-      //console.log("1");
     }
     
   }
@@ -1047,14 +970,12 @@ class Archers extends Minions {
     }
   }
   display() {
-    if (this.facingLeft) {//- playerImgPositionList[floor(this.walkCount/5)], - playerImgPositionList[floor(this.walkCount/5)]
+    if (this.facingLeft) {
       image(archerImgList[1][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
     if (this.facingRight) {
       image(archerImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
-    //fill("green");
-    //rect(this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
@@ -1095,7 +1016,7 @@ class DamageText {
     this.jumpCount = 10;
     this.direction = -1;
   }
-  move(){// -1 = up, 1 = down
+  move(){
     this.x += 1;
     this.y += 0.5 * this.jumpCount * this.direction;
     if (this.jumpCount < 0 && this.direction < 0){
@@ -1266,7 +1187,6 @@ function displayData() {
   image(healthBar, 52*(width/1920), 50, 500*0.75*(width/1920), 100*0.75);
   image(manaBar, 52*(width/1920), 150, 500*0.75*(width/1920), 100*0.75);
 
-  //pause icon
   noStroke();
   fill("white");
   if (mouseOverPause) {
@@ -1284,10 +1204,6 @@ function displayData() {
   text("TIME: " + round(time/1000), 7*width/9, height/10);
   text("SCORE: " + score, 5*width/9, height/10);
   pop();
-  // if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
-  //   noCursor();
-  // }
-  // image(cursor, mouseX, mouseY, 50*(width/1920), 50);
 }
 
 function movementCheck(object){
@@ -1302,22 +1218,18 @@ function movementCheck(object){
 
   if (object.positionY <= gridSize-2) { //moving down sanity check 
     if (grid[object.positionY+1][object.positionX] === 1 && object.y + object.height + object.speed >= (object.positionY+1) * cellSize) {
-      //console.log("1");
       object.downFree = false;
     }
     if (grid[object.positionY+1][object.positionX+1] === 1 && object.y + object.height + object.speed >= (object.positionY+1) * cellSize && object.x + object.width >= (object.positionX+1) * cellSize) {
-      //console.log("1");
       object.downFree = false;
     }
   }
 
   if (object.positionY >= 1) {//moving up sanity check
     if (grid[object.positionY-1][object.positionX] === 1 && object.y - object.speed <= (object.positionY) * cellSize) {
-      //console.log("2");
       object.upFree = false;
     }
     if (grid[object.positionY-1][object.positionX+1] === 1 && object.y - object.speed <= (object.positionY) * cellSize && object.x + object.width >= (object.positionX+1) * cellSize) {
-      //console.log("2");
       object.upFree = false;
     }
   }
@@ -1326,14 +1238,12 @@ function movementCheck(object){
   if (object.positionX <= gridSize-2) {//moving right sanity check
     if (object.positionY >= 1) {
       if (grid[object.positionY][object.positionX+1] === 1 && object.x + object.width + object.speed >= (object.positionX+1) * cellSize) {
-        //console.log("3");
         object.rightFree = false;
       }
     }
     if (object.positionY <= gridSize-2) {
       if (grid[object.positionY+1][object.positionX+1] === 1 && object.x + object.width + object.speed >= (object.positionX+1) * cellSize && object.y + object.height >= (object.positionY+1) * cellSize) {
         if (object.y + object.height >= (object.positionY+1) * cellSize) {
-          //console.log("3");
           object.rightFree = false;
         } 
       }
@@ -1343,14 +1253,12 @@ function movementCheck(object){
   if (object.positionX >= 1) {//moving left sanity check
     if (object.positionY >= 1) {
       if (grid[object.positionY][object.positionX-1] === 1 && object.x - object.speed <= (object.positionX) * cellSize) {
-        //console.log("4");
         object.leftFree = false;
       }
     }
     if (object.positionY <= gridSize-2) {
       if (grid[object.positionY+1][object.positionX-1] === 1 && object.x - object.speed <= (object.positionX) * cellSize) {
         if (object.y + object.height >= (object.positionY+1) * cellSize) {
-          //console.log("4");
           object.leftFree = false;
         }
       }
@@ -1366,25 +1274,21 @@ function slashcollision(slasher, target) {
   for (let i = 0; i < target.length; i++) {
     if (sqrt(sq(slasher.x - slasher.x) + sq(slasher.y - slasher.y)) < cellSize *3) {
       if (collidePointArc(target[i].x+ screenMoveX, target[i].y+ screenMoveY, slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-        //console.log("1");
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
       else if (collidePointArc(target[i].x + screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-        //console.log("2");
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
-        //console.log("3");
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
-        //console.log("4");
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
@@ -1412,18 +1316,11 @@ function keyPressed() {
     else if (gameOver){
       gameOver = false;
       startScreen = true;
-      //playerOne.health = 100;
-      //playerOne.mana = 200;
     }
   }
-  //mysteryMusic.pause();
 }
 
 function mousePressed(){
-  //console.log(mouseX, mouseY);
-  // if (mouseX > 1750 && mouseX < 1850 && mouseY > 50 && mouseY < 150) {
-  //   pause = !pause;
-  // }
   if (mouseOverPause) {
     pause = !pause;
   }
@@ -1433,9 +1330,8 @@ function mousePressed(){
 }
 
 function miniMap(){
-  //fill("grey");
   fill(142, 142, 142, 100);
-  rect(1550*(width/1920), 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); //grid[0].length*(cellSize/24), grid.length*(cellSize/24)
+  rect(1550*(width/1920), 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); 
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
@@ -1458,8 +1354,6 @@ function miniMap(){
 }
 
 function mouseClicked(){
-  // let attack = new DamageText(width/2, height/2, 15);
-  // textList.push(attack);
 }
 
 function mouseOverRect(x, y, rectWidth, rectHeight){
@@ -1467,8 +1361,4 @@ function mouseOverRect(x, y, rectWidth, rectHeight){
     return true;
   }
   return false;
-}
-
-function touchStarted() {
-  getAudioContext().resume();
 }
