@@ -110,6 +110,7 @@ let soundList = [];
 let slashSound;
 let shootSound;
 let laserSound;
+let pickSound;
 
 let playingOne = false;
 let playingTwo = false;
@@ -198,12 +199,12 @@ function preload() {
   soundFormats("ogg");
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
-  
+  gameoverMusic = loadSound("assets/gameover_music.mp3");
 
   slashSound = loadSound("assets/slash_sound.mp3");
   shootSound = loadSound("assets/shoot_sound.mp3");
   laserSound = loadSound("assets/laser.mp3");
-
+  pickSound = loadSound("assets/pickup_sound.mp3");
   
 }
 
@@ -254,8 +255,8 @@ function setup() {
 }
 
 function draw() {
-  if (startScreen){
-    if (playingOne === false && mouseIsPressed) {
+  if (startScreen){//&& mouseIsPressed
+    if (playingOne === false ) {
       mysteryMusic.loop();
       playingOne = true;
     }
@@ -350,7 +351,8 @@ function draw() {
 
   }
   if (gameOver === false && startScreen === false) {
-    if (playingTwo === false){      
+    if (playingTwo === false){  
+      console.log("1");    
       mysteryMusic.pause();
       combatMusic.loop();
       playingTwo = true;
@@ -507,6 +509,7 @@ function draw() {
           if (mouseIsPressed){
             if (pauseSelectionList[i][4] === "Home"){
               pause = false;
+              combatMusic.pause();
               startScreen = true;
             }
             else if (pauseSelectionList[i][4] === "Resume"){
@@ -524,8 +527,8 @@ function draw() {
         textAlign(CENTER);
         text(pauseSelectionList[i][4], pauseSelectionList[i][0]+pauseSelectionList[i][2]/2,pauseSelectionList[i][1]+pauseSelectionList[i][3]/2);
       }
-    }    
-    if (mouseOverRect(1750*(width/1920), 100*(width/1920), 50, 100)){
+    }    //(height/789) //
+    if (mouseOverRect(1750*(width/1920), 50*(height/789), 50*(width/1920), 100*(height/789))){
       mouseOverPause = true;
     }
     else {
@@ -712,7 +715,9 @@ class Player {
       this.mana -= 5;
       bulletList.push(playerBullet);
       playerShootLastTime = time;
-      soundList.push([shootSound, time, 1]);
+      shootSound.playMode("untilDone");
+      shootSound.play();
+      // soundList.push([shootSound, time, 1]);
     }
   }
   slash(){ 
@@ -728,7 +733,9 @@ class Player {
       rotate(slashAngle+180 - 40);
       image(slashImg, -this.width - 20, -this.height -20, this.width, this.height*2);
       pop();
-      soundList.push([slashSound, time, 1.5]);
+      slashSound.playMode("untilDone");
+      slashSound.play();
+      // soundList.push([slashSound, time, 1.5]);
       slashcollision(this, minionList);
       slashcollision(this, archerList);
     }
@@ -910,7 +917,7 @@ class Minions {
       image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
     fill("green");
-    rect(this.x+screenMoveX+this.width/2-width/3200*(this.lives/dataList[0][1]), this.y+screenMoveY-this.height/2,width/3200*this.lives,height/100);
+    rect(this.x+screenMoveX+this.width/2-width/40*(this.lives/dataList[0][1])/2, this.y+screenMoveY-this.height/2,width/40*(this.lives/dataList[0][1]),height/100);
   }
 }
 
@@ -968,7 +975,9 @@ class Archers extends Minions {
       let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1, dataList[1][0]);
       enemyBulletList.push(enemyBullet);
       this.enemyShootLastTime = time;
-      soundList.push([laserSound, time, 1]);
+      laserSound.playMode("untilDone");
+      laserSound.play();
+      // soundList.push([laserSound, time, 1]);
     }
   }
   display() {
@@ -979,7 +988,7 @@ class Archers extends Minions {
       image(archerImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
     fill("green");
-    rect(this.x+screenMoveX+this.width/2-width/3200*(this.lives/dataList[1][1]), this.y+screenMoveY-this.height/2,width/3200*this.lives,height/100);
+    rect(this.x+screenMoveX+this.width/2-width/40*(this.lives/dataList[1][1])/2, this.y+screenMoveY-this.height/2,width/40*(this.lives/dataList[1][1]),height/100);
   }
 }
 
@@ -1196,8 +1205,8 @@ function displayData() {
   if (mouseOverPause) {
     fill("grey");
   }
-  rect(1770*(width/1920), 60, 20*(width/1920), 80);
-  rect(1810*(width/1920), 60, 20*(width/1920), 80);
+  rect(1750*(width/1920), 50*(height/789), 20*(width/1920), 100*(height/789));
+  rect(1800*(width/1920), 50*(height/789), 20*(width/1920), 100*(height/789));
 
   miniMap();
   push();
@@ -1335,29 +1344,30 @@ function mousePressed(){
 
 function miniMap(){
   fill(142, 142, 142, 100);
-  rect(1550*(width/1920), 170, grid[0].length*(cellSize/24), grid.length*(cellSize/24)); 
+  rect(1550*(width/1920), 170*(height/789), grid[0].length*(cellSize/24), grid.length*(cellSize/24)); 
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect((1550+x*cellSize/24)*(width/1920), 170+y*cellSize/24, cellSize/24*(width/1920), cellSize/24); 
+        rect((1550+x*cellSize/24)*(width/1920), (170+y*cellSize/24)*(height/789), cellSize/24, cellSize/24); 
       }
     }
   }
   fill("red");
-  rect((playerOne.x/24+1550)*(width/1920), playerOne.y/24+170, playerOne.width/24*(width/1920), playerOne.height/24);
+  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170)*(height/789), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
   if (round(frameCount/50) % 2 === 0 && minionList.length+archerList.length <= 15){
     push();
     textSize(25);
     stroke(255);
     fill(255);
     textAlign(LEFT);
-    text("Find and Defeat Remaining Enemies!", 1550*(width/1920)-50, 170+grid.length*(cellSize/24));
+    text("Find and Defeat Remaining Enemies!", 1400*(width/1920), (170+grid.length*(cellSize/24))*(height/789));
     pop();
   } 
 }
 
 function mouseClicked(){
+  console.log(mouseX, mouseY);
 }
 
 function mouseOverRect(x, y, rectWidth, rectHeight){
