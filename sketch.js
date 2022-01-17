@@ -1356,7 +1356,7 @@ function miniMap(){
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect((1550+x*cellSize/24)*(width/1920), (170+y*cellSize/24)*(height/789), cellSize/24, cellSize/24); 
+        rect((1550+x*cellSize/24)*(width/1920), (170*(height/789)+y*cellSize/24), cellSize/24, cellSize/24); 
       }
     }
   }
