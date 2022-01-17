@@ -909,6 +909,8 @@ class Minions {
     if (this.facingRight) {
       image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
+    fill("green");
+    rect(this.x+screenMoveX+this.width/2, this.y+screenMoveY+this.height/2,width/1600*this.lives,height/50);
   }
 }
 
