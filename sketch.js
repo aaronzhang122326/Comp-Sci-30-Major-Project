@@ -114,6 +114,7 @@ let pickSound;
 
 let playingOne = false;
 let playingTwo = false;
+let playingThree = false;
 
 let healthPot;
 let manaPot;
@@ -255,10 +256,12 @@ function setup() {
 }
 
 function draw() {
-  if (startScreen){//&& mouseIsPressed
-    if (playingOne === false ) {
+  if (startScreen){//
+    if (playingOne === false && mouseIsPressed) {
       mysteryMusic.loop();
+      gameoverMusic.pause();
       playingOne = true;
+      playingThree = false;
     }
     image(startImg, 0, 0, width, height);
     image(titleImg, 100, 100, width/5, width/20);
@@ -352,7 +355,6 @@ function draw() {
   }
   if (gameOver === false && startScreen === false) {
     if (playingTwo === false){  
-      console.log("1");    
       mysteryMusic.pause();
       combatMusic.loop();
       playingTwo = true;
@@ -510,6 +512,7 @@ function draw() {
             if (pauseSelectionList[i][4] === "Home"){
               pause = false;
               combatMusic.pause();
+              playingTwo = false;
               startScreen = true;
             }
             else if (pauseSelectionList[i][4] === "Resume"){
@@ -571,6 +574,10 @@ function draw() {
     }
   }
   if (gameOver){
+    if (playingThree === false){  
+      gameoverMusic.loop();
+      playingThree = true;
+    } 
     textSize(100);
     stroke(255);
     fill(255);
