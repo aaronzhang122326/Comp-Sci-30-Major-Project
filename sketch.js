@@ -910,7 +910,7 @@ class Minions {
       image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
     fill("green");
-    rect(this.x+screenMoveX+this.width/2, this.y+screenMoveY+this.height/2,width/1600*this.lives,height/50);
+    rect(this.x+screenMoveX+this.width/2-width/3200*(this.lives/dataList[0][1]), this.y+screenMoveY-this.height/2,width/3200*this.lives,height/100);
   }
 }
 
@@ -978,6 +978,8 @@ class Archers extends Minions {
     if (this.facingRight) {
       image(archerImgList[0][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
     }
+    fill("green");
+    rect(this.x+screenMoveX+this.width/2-width/3200*(this.lives/dataList[1][1]), this.y+screenMoveY-this.height/2,width/3200*this.lives,height/100);
   }
 }
 
