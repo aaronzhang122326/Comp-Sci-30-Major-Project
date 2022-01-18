@@ -105,7 +105,6 @@ let combatMusic;
 let mysteryMusic;
 let gameoverMusic;
 
-let firstTime = true;
 
 let soundList = [];
 let slashSound;
@@ -115,7 +114,6 @@ let pickSound;
 
 let playingOne = false;
 let playingTwo = false;
-let playingThree = false;
 
 let healthPot;
 let manaPot;
@@ -252,30 +250,15 @@ function setup() {
   ];
 
   infoList = [
-    [width/8-width/16, 2*height/3, width/8, height/8, "How to Play", "Exit"],   
+    [width/8-width/16, 2*height/3, width/8, height/8, "Info", "Exit"],   
   ];
 }
 
 function draw() {
-  if (startScreen){//&& 
-    if (playingOne === false) {
-      if (firstTime){
-        if (mouseIsPressed){
-          mysteryMusic.loop();
-          gameoverMusic.pause();
-          playingOne = true;
-          playingThree = false;
-          firstTime = false;
-        }
-      }
-      else {
-        mysteryMusic.loop();
-        gameoverMusic.pause();
-        playingOne = true;
-        playingThree = false;
-      }
-      
-
+  if (startScreen){//
+    if (playingOne === false && mouseIsPressed) {
+      mysteryMusic.loop();
+      playingOne = true;
     }
     image(startImg, 0, 0, width, height);
     image(titleImg, 100, 100, width/5, width/20);
@@ -290,7 +273,7 @@ function draw() {
     }
     if (modeSelection === false) {
       rect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3]);
-      textSize(30);
+      textSize(50);
       stroke(255);
       fill(255);
       textAlign(CENTER);
@@ -369,6 +352,7 @@ function draw() {
   }
   if (gameOver === false && startScreen === false) {
     if (playingTwo === false){  
+      console.log("1");    
       mysteryMusic.pause();
       combatMusic.loop();
       playingTwo = true;
@@ -526,7 +510,6 @@ function draw() {
             if (pauseSelectionList[i][4] === "Home"){
               pause = false;
               combatMusic.pause();
-              playingTwo = false;
               startScreen = true;
             }
             else if (pauseSelectionList[i][4] === "Resume"){
@@ -588,10 +571,6 @@ function draw() {
     }
   }
   if (gameOver){
-    if (playingThree === false){  
-      gameoverMusic.loop();
-      playingThree = true;
-    } 
     textSize(100);
     stroke(255);
     fill(255);
@@ -814,11 +793,10 @@ class Bullet {
 }
 
 class EnemyBullet extends Bullet {
-  constructor(x, y, radius, speed, hit, damage) {
+  constructor(x, y, radius, speed, hit) {
     super(x, y, radius, speed, hit);
     this.disX = this.x - playerOne.x-playerOne.width/2;
     this.disY = this.y - playerOne.y-playerOne.height/2;
-    this.damage = damage;
   }
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -826,7 +804,7 @@ class EnemyBullet extends Bullet {
 
     if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width && this.y > playerOne.y && this.y < playerOne.y + playerOne.height){
       this.hit -= 1;
-      playerOne.health -= this.damage;
+      playerOne.health -= 5;
     }
   }
   display() {
@@ -1154,6 +1132,7 @@ function generateDungeon() {
     iCount += 1;
   }
   generateInterior();
+
   for (let i = 0; i < 3; i++) {
     for (let y = 0; y < gridSize; y++) {
       for (let x = 0; x < gridSize; x++) {
@@ -1370,12 +1349,12 @@ function miniMap(){
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect((1550+x*cellSize/24)*(width/1920), (170*(height/789)+y*cellSize/24), cellSize/24, cellSize/24); 
+        rect((1550+x*cellSize/24)*(width/1920), (170+y*cellSize/24)*(height/789), cellSize/24, cellSize/24); 
       }
     }
   }
   fill("red");
-  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170*(height/789)), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
+  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170)*(height/789), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
   if (round(frameCount/50) % 2 === 0 && minionList.length+archerList.length <= 15){
     push();
     textSize(25);
