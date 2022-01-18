@@ -1154,31 +1154,30 @@ function generateDungeon() {
     iCount += 1;
   }
   generateInterior();
-
-  for (let i = 0; i < 3; i++) {
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        if (grid[y][x] !== 0) {
-          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
-            if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
-              grid[y][x] = 2;
-            }
-          }
-        }
-      }
-    }
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        if (grid[y][x] === 1) {
-          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
-            if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
-              grid[y][x] = 2;
-            }
-          }
-        }
-      }
-    }
-  }
+  // for (let i = 0; i < 3; i++) {
+  //   for (let y = 0; y < gridSize; y++) {
+  //     for (let x = 0; x < gridSize; x++) {
+  //       if (grid[y][x] !== 0) {
+  //         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
+  //           if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
+  //             grid[y][x] = 2;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   for (let y = 0; y < gridSize; y++) {
+  //     for (let x = 0; x < gridSize; x++) {
+  //       if (grid[y][x] === 1) {
+  //         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
+  //           if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
+  //             grid[y][x] = 2;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 } 
 
 function spawnLocation(objectX, objectY) { 
