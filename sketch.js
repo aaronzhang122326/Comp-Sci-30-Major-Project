@@ -105,6 +105,7 @@ let combatMusic;
 let mysteryMusic;
 let gameoverMusic;
 
+let firstTime = true;
 
 let soundList = [];
 let slashSound;
@@ -251,17 +252,30 @@ function setup() {
   ];
 
   infoList = [
-    [width/8-width/16, 2*height/3, width/8, height/8, "Info", "Exit"],   
+    [width/8-width/16, 2*height/3, width/8, height/8, "How to Play", "Exit"],   
   ];
 }
 
 function draw() {
-  if (startScreen){//
-    if (playingOne === false && mouseIsPressed) {
-      mysteryMusic.loop();
-      gameoverMusic.pause();
-      playingOne = true;
-      playingThree = false;
+  if (startScreen){//&& 
+    if (playingOne === false) {
+      if (firstTime){
+        if (mouseIsPressed){
+          mysteryMusic.loop();
+          gameoverMusic.pause();
+          playingOne = true;
+          playingThree = false;
+          firstTime = false;
+        }
+      }
+      else {
+        mysteryMusic.loop();
+        gameoverMusic.pause();
+        playingOne = true;
+        playingThree = false;
+      }
+      
+
     }
     image(startImg, 0, 0, width, height);
     image(titleImg, 100, 100, width/5, width/20);
@@ -276,7 +290,7 @@ function draw() {
     }
     if (modeSelection === false) {
       rect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3]);
-      textSize(50);
+      textSize(30);
       stroke(255);
       fill(255);
       textAlign(CENTER);
@@ -800,10 +814,11 @@ class Bullet {
 }
 
 class EnemyBullet extends Bullet {
-  constructor(x, y, radius, speed, hit) {
+  constructor(x, y, radius, speed, hit, damage) {
     super(x, y, radius, speed, hit);
     this.disX = this.x - playerOne.x-playerOne.width/2;
     this.disY = this.y - playerOne.y-playerOne.height/2;
+    this.damage = damage;
   }
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -811,7 +826,7 @@ class EnemyBullet extends Bullet {
 
     if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width && this.y > playerOne.y && this.y < playerOne.y + playerOne.height){
       this.hit -= 1;
-      playerOne.health -= 5;
+      playerOne.health -= this.damage;
     }
   }
   display() {
@@ -1361,7 +1376,7 @@ function miniMap(){
     }
   }
   fill("red");
-  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170)*(height/789), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
+  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170*(height/789)), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
   if (round(frameCount/50) % 2 === 0 && minionList.length+archerList.length <= 15){
     push();
     textSize(25);
