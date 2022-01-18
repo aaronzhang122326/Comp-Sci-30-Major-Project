@@ -793,10 +793,11 @@ class Bullet {
 }
 
 class EnemyBullet extends Bullet {
-  constructor(x, y, radius, speed, hit) {
+  constructor(x, y, radius, speed, hit, damage) {
     super(x, y, radius, speed, hit);
     this.disX = this.x - playerOne.x-playerOne.width/2;
     this.disY = this.y - playerOne.y-playerOne.height/2;
+    this.damage = damage;
   }
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -804,7 +805,7 @@ class EnemyBullet extends Bullet {
 
     if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width && this.y > playerOne.y && this.y < playerOne.y + playerOne.height){
       this.hit -= 1;
-      playerOne.health -= 5;
+      playerOne.health -= this.damage;
     }
   }
   display() {
@@ -1349,12 +1350,12 @@ function miniMap(){
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] !== 0 && grid[y][x] !== 1){
         fill("black");
-        rect((1550+x*cellSize/24)*(width/1920), (170+y*cellSize/24)*(height/789), cellSize/24, cellSize/24); 
+        rect((1550+x*cellSize/24)*(width/1920), (170*(height/789)+y*cellSize/24), cellSize/24, cellSize/24); 
       }
     }
   }
   fill("red");
-  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170)*(height/789), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
+  rect((playerOne.x/24+1550)*(width/1920), (playerOne.y/24+170*(height/789)), playerOne.width/24*(width/1920), (playerOne.height/24)*(height/789));
   if (round(frameCount/50) % 2 === 0 && minionList.length+archerList.length <= 15){
     push();
     textSize(25);
@@ -1376,6 +1377,5 @@ function mouseOverRect(x, y, rectWidth, rectHeight){
   }
   return false;
 }
-//
 //
 //
