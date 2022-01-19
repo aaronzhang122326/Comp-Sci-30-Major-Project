@@ -288,6 +288,8 @@ function draw() {
       [5, 200], 
       [5, 100],
     ];
+    minionSpeed = 5;
+    archerSpeed = 5;
     minionList = [];
     archerList = [];
     itemList = [];
@@ -490,11 +492,11 @@ function draw() {
           timeCount = 40;
           gameRound += 1;
 
-          dataList[0][2] = dataList[0][2] * 2;
+          dataList[0][0] = dataList[0][0] * 2;
           dataList[0][1] = dataList[0][1] * 1.5;
           minionSpeed = minionSpeed * 1.1;
 
-          dataList[1][2] = dataList[1][2] * 2;
+          dataList[1][0] = dataList[1][0] * 2;
           dataList[1][1] = dataList[1][1] * 1.5;
           archerSpeed = archerSpeed * 1.1;
 
@@ -655,7 +657,7 @@ class Player {
       this.y -= this.speed;
       screenMoveY += this.speed; 
     }
-    else if (keyIsDown(83) && this.downFree) {
+    else if (keyIsDown(83) && this.downFree && !keyIsDown(87)) {
       this.y += this.speed;
       screenMoveY -= this.speed; 
     }
@@ -664,7 +666,7 @@ class Player {
       this.x -= this.speed;
       screenMoveX += this.speed; 
     }
-    else if (keyIsDown(68) && this.rightFree) {
+    else if (keyIsDown(68) && this.rightFree && !keyIsDown(65)) {
       this.x += this.speed;
       screenMoveX -= this.speed; 
     }
