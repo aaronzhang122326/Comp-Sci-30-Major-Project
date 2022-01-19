@@ -250,7 +250,7 @@ function setup() {
   ];
 
   infoList = [
-    [width/8-width/16, 2*height/3, width/8, height/8, "Info", "Exit"],   
+    [width/8-width/16, 2*height/3, width/8, height/8, "How to Play", "Exit"],   
   ];
 }
 
@@ -273,7 +273,7 @@ function draw() {
     }
     if (modeSelection === false) {
       rect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3]);
-      textSize(50);
+      textSize(30);
       stroke(255);
       fill(255);
       textAlign(CENTER);
