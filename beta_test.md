@@ -4,7 +4,8 @@ Kayaan tharani (Comp Sci 30 classmate)
     -potions are too small to click and pick up
 
     Changes:
-        -
+        - added 1 exta "if statement" each in moving horizontally and moving vertically to avoid glitching back and forth 
+        - reset variables when restarting game
 
 Md. S
     - I would prefer to switch weapons using number keys instead of space
