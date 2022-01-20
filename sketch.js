@@ -39,6 +39,7 @@ let melee = false;
 let shooting = false; 
 
 let weapon;
+let blade;
 let bullet;
 
 let playerData;
@@ -160,6 +161,7 @@ function preload() {
   playerLFour = loadImage("assets/player_sprite_8.png");
 
   weapon = loadImage("assets/weapon_1.png");
+  blade = loadImage("assets/blade.png");
   bullet = loadImage("assets/bullet.jpg");
 
   playerData = loadImage("assets/health setting.PNG");
@@ -706,8 +708,14 @@ class Player {
     angleMode(DEGREES);
     push();
     translate(this.x+this.width/2+screenMoveX, this.y+this.height/1.5+screenMoveY);
-    rotate(this.angle);
-    image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
+    if (range){
+      rotate(this.angle);
+      image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
+    }
+    else {
+      rotate(this.angle+90);
+      image(blade, -this.width/12, -this.height/1.2, this.width/6, this.height);
+    }
     pop();
   }
 

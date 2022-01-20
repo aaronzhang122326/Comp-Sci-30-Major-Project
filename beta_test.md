@@ -14,3 +14,8 @@ Md. S
     - Would like to have a screen after death to congratulate on how long survived
     - Really like how the character has movement animation and gun display
     - helps to have the instructions on home screen
+
+    Changes:
+        -because of personal preference, I chose to use space key to switch weapons, instead of number keys
+        -becasue of personal preference, I prefer mannual pick up of items 
+        -added sprites to show blade when melee attacking 
