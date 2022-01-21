@@ -1,198 +1,147 @@
 // CS-30 Major Project 
 // Aaron Su
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// January 25, 2022
 
-//To do:
-//1. speed items
-//2. damage items
-//3. bullet items
-//5. music and sound 
-//6. health increase items (maybe)
-//7. mana increase items (maybe)
+//variables 
 
-//fix lastShoot
-
+//grid variables
 let grid;
 let cellSize = 120;
 let gridSize = 60;
 
-let playerOne;
-let playerOnePositionX;
-let playerOnePositionY;
+//player variables
+let playerOne, playerOnePositionX, playerOnePositionY;
+let playerROne, playerRTwo, playerRThree, playerRFour;
+let playerLOne, playerLTwo, playerLThree, playerLFour;
+let playerImgPositionList;
+let healthBar, health, manaBar, mana, manaValue;
+let playerImgList;
 
-let playerROne;
-let playerRTwo;
-let playerRThree;
-let playerRFour;
-
-let playerLOne;
-let playerLTwo;
-let playerLThree;
-let playerLFour;
-
+//player attack variables
 let slashing = false;
 let slashAngle;
 let melee = false;
+let range = true;
 let shooting = false; 
 
-let weapon;
-let blade;
-let bullet;
-
-let playerData;
-let healthBar;
-let health;
-let manaBar;
-let mana;
-let manaValue;
-
-let playerImgList;
-let playeImgPositionList;
-
+//player weapon varibales 
+let weapon, blade, bullet, slashImg;
 let bulletList = [];
-let enemyBulletList = [];
 
-let roomList = [];
-let roomNumber;
-let iCount = 0;
-
-let screenMoveX = 0;
-let screenMoveY = 0;
-let time;
-let lastTime = 0;
-
+//enemy minion variables
 let minionList = [];
 let minionSpeed = 5;
 let minionImgList;
+let hogImgPositionList, hogImgList;
+let hogLOne, hogLTwo, hogLThree;
+let hogROne, hogRTwo, hogRThree;
 
-let hogImgPositionList;
-let hogLOne;
-let hogLTwo;
-let hogLThree;
-
-let hogROne;
-let hogRTwo;
-let hogRThree;
-
-
+//enemy archer variables
 let archerList = [];
 let archerSpeed = 5;
 let playerShootLastTime;
 let enemyShootLastTime;
-let range = true;
-
-let archerImgList;
-let archerImgPositionList;
-let archerLOne;
-let archerLTwo;
-let archerLThree;
-
-let archerROne;
-let archerRTwo;
-let archerRThree;
-
 let enemyBullet;
+let enemyBulletList = [];
+let archerImgList, archerImgPositionList;
+let archerLOne, archerLTwo, archerLThree;
+let archerROne, archerRTwo, archerRThree;
 
-let floorImgOne;
-let floorImgTwo;
-let floorImgFour;
-let wallImg;
-let slashImg;
+//terrain variables
+let roomList = [];
+let roomNumber;
+let iCount = 0;
+let floorImgOne, floorImgTwo, floorImgFour, wallImg;
 
-let combatMusic;
-let mysteryMusic;
-let gameoverMusic;
-
-
-let soundList = [];
-let slashSound;
-let shootSound;
-let laserSound;
-let pickSound;
-
+//sound effect and music variables 
+let combatMusic, mysteryMusic;
 let playingOne = false;
 let playingTwo = false;
+let soundList = [];
+let slashSound, shootSound, laserSound, pickSound;
 
+//item variables
 let healthPot;
 let manaPot;
 let itemList = [];
 
+//setting variables
 let pause = false;
 let gameOver = false;
-let mouseOverPause = false;
-let cursor;
-let score = 0;
-
 let startScreen = true;
 let modeSelection = false;
+let mouseOverPause = false;
+let helpPage = false;
+let cursor;
 let selectionList;
+let pauseSelectionList;
+let infoList;
+let startImg, titleImg, pressToStartImg;
+let time;
+let score = 0;
+let gameRound = 0;
+let timeCount = 40;
+let screenMoveX = 0;
+let screenMoveY = 0;
+let lastTime = 0;
+let textList = [];
 let dataList = [
   [5, 200], 
   [5, 100],
 ];
-let infoList;
-let helpPage = false;
-
-let textList = [];
-
-let gameRound = 0;
-let timeCount = 40;
 
 function preload() {
+  //terrain sprites
   floorImgOne = loadImage("assets/floor1.PNG");
   floorImgTwo = loadImage("assets/floor2.PNG");
-  floorImgThree = loadImage("assets/floor3.PNG");
   floorImgFour = loadImage("assets/floor4.PNG");
-
   wallImg = loadImage("assets/wall.jpg");
-  slashImg = loadImage("assets/swordSlash.png");
 
+  //player sprites
   playerROne = loadImage("assets/player_sprite.png");
   playerRTwo = loadImage("assets/player_sprite_2.png");
   playerRThree = loadImage("assets/player_sprite_3.png");
   playerRFour = loadImage("assets/player_sprite_4.png");
-
   playerLOne = loadImage("assets/player_sprite_5.png");
   playerLTwo = loadImage("assets/player_sprite_6.png");
   playerLThree = loadImage("assets/player_sprite_7.png");
   playerLFour = loadImage("assets/player_sprite_8.png");
 
+  //player attack sprites
   weapon = loadImage("assets/weapon_1.png");
   blade = loadImage("assets/blade.png");
-  bullet = loadImage("assets/bullet.jpg");
+  bullet = loadImage("assets/bullet.jpg");  
+  slashImg = loadImage("assets/swordSlash.png");
 
-  playerData = loadImage("assets/health setting.PNG");
+  //player setting sprites 
   healthBar = loadImage("assets/health_bar.png");
   manaBar = loadImage("assets/mana_bar.png");
   health = loadImage("assets/health.png");
   mana = loadImage("assets/mana.png");
   cursor = loadImage("assets/cursor.png");
 
+  //enemy minion sprites
   hogLOne = loadImage("assets/hog_1.png");
   hogLTwo = loadImage("assets/hog_2.png");
   hogLThree = loadImage("assets/hog_3.png");
-
   hogROne = loadImage("assets/hog_4.png");
   hogRTwo = loadImage("assets/hog_5.png");
   hogRThree = loadImage("assets/hog_6.png");
 
-
+  //enemy archer sprites 
   archerLOne = loadImage("assets/archer_1.png");
   archerLTwo = loadImage("assets/archer_2.png");
   archerLThree = loadImage("assets/archer_3.jpg");
-
   archerROne = loadImage("assets/archer_4.png");
   archerRTwo = loadImage("assets/archer_5.png");
   archerRThree = loadImage("assets/archer_6.jpg");
-
   enemyBullet = loadImage("assets/enemy_bullet.PNG");
 
+  //item sprites
   healthPot = loadImage("assets/health_pot.PNG");
   manaPot = loadImage("assets/mana_pot.png");
 
+  //game setting sprites
   startImg = loadImage("assets/start_screen.jpg");
   titleImg = loadImage("assets/title.png");
   pressToStartImg = loadImage("assets/press_to_start.png");
@@ -201,8 +150,8 @@ function preload() {
   soundFormats("ogg");
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
-  gameoverMusic = loadSound("assets/gameover_music.mp3");
 
+  //sound effects
   slashSound = loadSound("assets/slash_sound.mp3");
   shootSound = loadSound("assets/shoot_sound.mp3");
   laserSound = loadSound("assets/laser.mp3");
@@ -257,7 +206,7 @@ function setup() {
 }
 
 function draw() {
-  if (startScreen){//
+  if (startScreen){
     if (playingOne === false && mouseIsPressed) {
       mysteryMusic.loop();
       playingOne = true;
@@ -531,7 +480,7 @@ function draw() {
         textAlign(CENTER);
         text(pauseSelectionList[i][4], pauseSelectionList[i][0]+pauseSelectionList[i][2]/2,pauseSelectionList[i][1]+pauseSelectionList[i][3]/2);
       }
-    }    //(height/789) //
+    } 
     if (mouseOverRect(1750*(width/1920), 50*(height/789), 50*(width/1920), 100*(height/789))){
       mouseOverPause = true;
     }
@@ -592,7 +541,7 @@ function draw() {
   }
 }
 
-//creating and displaying grid
+//creating 2D Array
 function create2DArray(row, col) {
   let gridList = [];
   for (let y = 0; y < col; y++) {
@@ -603,6 +552,8 @@ function create2DArray(row, col) {
   }
   return gridList;
 }
+
+//displaying 2D array with terrain sprites 
 function displayGrid(col, row) {
   for (let y = 0; y < col; y++) {
     for (let x = 0; x < row; x++) {
@@ -628,6 +579,7 @@ function displayGrid(col, row) {
   }
 }
 
+//player
 class Player {
   constructor(x, y, width, height, speed, shootSpeed, slashSpeed, health, mana, damage) {
     this.x = x;
@@ -652,66 +604,89 @@ class Player {
     this.lastTime = 0;
     this.angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
   }
+  //player movement and control
   move() {
     movementCheck(this);
-
-    if (keyIsDown(87) && this.upFree) {
+    
+    //moving up
+    if (keyIsDown(87) && this.upFree) { 
       this.y -= this.speed;
       screenMoveY += this.speed; 
     }
-    else if (keyIsDown(83) && this.downFree && !keyIsDown(87)) {
+    
+    //moving down
+    else if (keyIsDown(83) && this.downFree && !keyIsDown(87)) { 
       this.y += this.speed;
       screenMoveY -= this.speed; 
     }
-    
-    if (keyIsDown(65) && this.leftFree) {
+
+    //moving left
+    if (keyIsDown(65) && this.leftFree) { 
       this.x -= this.speed;
       screenMoveX += this.speed; 
     }
-    else if (keyIsDown(68) && this.rightFree && !keyIsDown(65)) {
+    
+    //moving right
+    else if (keyIsDown(68) && this.rightFree && !keyIsDown(65)) { 
       this.x += this.speed;
       screenMoveX -= this.speed; 
     }
 
-    if (mouseX >= this.x + screenMoveX){
+    //determining player facing direction
+    
+    //player facing right
+    if (mouseX >= this.x + screenMoveX){ 
       this.facingRight = true;
       this.facingLeft = false;
     }
-    else {
+    
+    //player facing left
+    else { 
       this.facingRight = false;
       this.facingLeft = true;
     }
 
+    //walkCount 
     if (keyIsDown(87) || keyIsDown(83) || keyIsDown(65) || keyIsDown(68)) {
       this.walkCount += 1;
     }
     else {
       this.walkCount = 0;
     }
-
     if (this.walkCount >= 20) {
       this.walkCount = 0;
     }
+
+    //mana recovery
     if (time > this.lastTime + 1000 && this.mana + 5 < 200) {
       this.mana += 5;
       this.lastTime = time;
     }
+
+    //determining weapon pointing direction
     this.angle = atan2(mouseY-(this.height/2+this.y+screenMoveY), mouseX-(this.width/2+this.x+screenMoveX));
   }
+
+  //displaying player movement and animation
   display() {
+    //displaying movement facing left
     if (this.facingLeft) {
       image(playerImgList[0][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
+    //displaying movement facing right 
     if (this.facingRight) {
       image(playerImgList[1][floor(this.walkCount/5)], this.x + screenMoveX, this.y + screenMoveY - playerImgPositionList[floor(this.walkCount/5)], this.width, this.height);
     }
+    //diplaying weapon
     angleMode(DEGREES);
     push();
     translate(this.x+this.width/2+screenMoveX, this.y+this.height/1.5+screenMoveY);
+    //displaying launcher 
     if (range){
       rotate(this.angle);
       image(weapon, -this.width/4, -this.height/6, this.width/2, this.height/3);
     }
+    //displaying blade
     else {
       rotate(this.angle+90);
       image(blade, -this.width/12, -this.height/1.2, this.width/6, this.height);
@@ -719,6 +694,7 @@ class Player {
     pop();
   }
 
+  //player shoot movement 
   shoot() { 
     if (mouseIsPressed &&  time - playerShootLastTime > this.shootSpeed && range && this.mana > 5) {
       let playerBullet = new Bullet(playerOne.x+playerOne.width/2, playerOne.y+playerOne.height/2, 15, 30, 1, 20);
@@ -727,9 +703,10 @@ class Player {
       playerShootLastTime = time;
       shootSound.playMode("untilDone");
       shootSound.play();
-      // soundList.push([shootSound, time, 1]);
     }
   }
+
+  //player slash movement 
   slash(){ 
     if (mouseIsPressed &&  time - playerShootLastTime > this.slashSpeed && slashing === false) {
       angleMode(DEGREES);
@@ -745,17 +722,16 @@ class Player {
       pop();
       slashSound.playMode("untilDone");
       slashSound.play();
-      // soundList.push([slashSound, time, 1.5]);
       slashcollision(this, minionList);
       slashcollision(this, archerList);
     }
-
     if (time - playerShootLastTime > 100) {
       slashing = false;
     }
   }
 }
 
+//player bullet 
 class Bullet {
   constructor(x, y, radius, speed, hit, damage) {
     this.x = x;
@@ -768,11 +744,13 @@ class Bullet {
     this.disY = mouseY - screenMoveY - playerOne.y-playerOne.height/2;
     this.angle = atan2(mouseY-(playerOne.height/2+playerOne.y+screenMoveY), mouseX-(playerOne.width/2+playerOne.x+screenMoveX));
   }
+
+  //player bullet travel path
   move() {
     this.x += this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y += this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
 
-    //bullet minion detection
+    //player bullet and minion collision detection
     for (let i = 0; i < minionList.length; i++){
       if (this.x > minionList[i].x && this.x < minionList[i].x + minionList[i].width && this.y > minionList[i].y && this.y < minionList[i].y + minionList[i].height){
         this.hit -= 1;
@@ -782,7 +760,7 @@ class Bullet {
       }
     }
 
-    //bullet archer detection
+    //player bullet and archer collision detection
     for (let i = 0; i < archerList.length; i++){
       if (this.x > archerList[i].x && this.x < archerList[i].x + archerList[i].width && this.y > archerList[i].y && this.y < archerList[i].y + archerList[i].height){
         this.hit -= 1;
@@ -792,6 +770,8 @@ class Bullet {
       }
     }
   }
+
+  //display bullet
   display() {
     angleMode(DEGREES);
     push();
@@ -802,6 +782,7 @@ class Bullet {
   }
 }
 
+//enemy bullet
 class EnemyBullet extends Bullet {
   constructor(x, y, radius, speed, hit, damage) {
     super(x, y, radius, speed, hit);
@@ -809,20 +790,26 @@ class EnemyBullet extends Bullet {
     this.disY = this.y - playerOne.y-playerOne.height/2;
     this.damage = damage;
   }
+
+  //enemy bullet movement path
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y -= this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
 
+    //enemy bullet and player collision detection 
     if (this.x > playerOne.x && this.x < playerOne.x + playerOne.width && this.y > playerOne.y && this.y < playerOne.y + playerOne.height){
       this.hit -= 1;
       playerOne.health -= this.damage;
     }
   }
+
+  //displaying enemy bullet
   display() {
     image(enemyBullet, this.x + screenMoveX, this.y + screenMoveY, this.radius*2);
   }
 }
 
+//enemy minions
 class Minions {
   constructor(x, y, width, height, speed, lives, damage) {
     this.x = x;
@@ -838,7 +825,6 @@ class Minions {
     this.upFree = true;
     this.downFree = true;
     this.walkCount = 0;
-    this.directionCount = 0;
     if (random(0, 100) > 50) {
       this.facingLeft = true;
     }
@@ -848,39 +834,34 @@ class Minions {
     
     this.facingRight = !this.facingLeft; 
   }
+
+  //movement of enemy minions
   move() {
     let pX = playerOne.x + playerOne.width/2;
     let pY = playerOne.y + playerOne.height/2;
     let tX = this.x+this.width/2;
     let tY = this.y+this.height/2;
 
-    
-
     if (sqrt(sq(pX - tX) + sq(pY - tY)) < cellSize *10) {
       this.walkCount += 1;
-      this.directionCount = 0;
       movementCheck(this);
       if (tX + this.speed < pX) {
         if (this.rightFree) {
           this.x += this.speed;
           this.facingLeft = false;
           this.facingRight = true;
-          this.directionCount += 1;
         }
       }
       else if (tX - this.speed > pX && this.leftFree) {
         this.x -= this.speed;
         this.facingLeft = true;
         this.facingRight = false;
-        this.directionCount += 1;
       }
       if (tY + this.speed < pY && this.downFree) {
         this.y += this.speed;
-        this.directionCount += 1;
       }
       else if (tY - this.speed > pY && this.upFree) {
         this.y -= this.speed;
-        this.directionCount += 1;
       }
     } 
 
@@ -988,7 +969,6 @@ class Archers extends Minions {
       this.enemyShootLastTime = time;
       laserSound.playMode("untilDone");
       laserSound.play();
-      // soundList.push([laserSound, time, 1]);
     }
   }
   display() {
@@ -1143,34 +1123,9 @@ function generateDungeon() {
     iCount += 1;
   }
   generateInterior();
-
-  for (let i = 0; i < 3; i++) {
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        if (grid[y][x] !== 0) {
-          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
-            if (grid[y][x] === 1 && (grid[y][x-1] === 2 && grid[y][x+1] === 2) || (grid[y-1][x] === 2 && grid[y+1][x] === 2)) {
-              grid[y][x] = 2;
-            }
-          }
-        }
-      }
-    }
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        if (grid[y][x] === 1) {
-          if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0 && grid[y][x+1] !== 0 && grid[y][x-1] !== 0) {
-            if (grid[y+1][x] === 1 && grid[y-1][x] === 2 || grid[y-1][x] === 2 && grid[y+1][x] === 1 || grid[y][x+1] === 1 && grid[y][x-1] === 2 || grid[y][x-1] === 1 && grid[y][x+1] === 2) {
-              grid[y][x] = 2;
-            }
-          }
-        }
-      }
-    }
-  }
 } 
 
-function spawnLocation(objectX, objectY) { 
+function spawnLocation() { 
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       if (grid[y][x] === 2) {
@@ -1377,15 +1332,9 @@ function miniMap(){
   } 
 }
 
-function mouseClicked(){
-  console.log(mouseX, mouseY);
-}
-
 function mouseOverRect(x, y, rectWidth, rectHeight){
   if (mouseX > x && mouseX < x+rectWidth && mouseY > y && mouseY < y+rectHeight) {
     return true;
   }
   return false;
 }
-//
-//
