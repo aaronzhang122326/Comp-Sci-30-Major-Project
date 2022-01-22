@@ -206,6 +206,8 @@ function setup() {
 }
 
 function draw() {
+
+  //start screen
   if (startScreen){
     if (playingOne === false && mouseIsPressed) {
       mysteryMusic.loop();
@@ -216,12 +218,16 @@ function draw() {
     if (round(frameCount/50) % 2 === 0 && modeSelection === false){
       image(pressToStartImg, width/2-width/10, 8*height/10, width/5, width/20);
     } 
+
+    //selecton screen
     if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
       fill("red");
     }
     else {
       fill("grey");
     }
+
+    //help page icon display
     if (modeSelection === false) {
       rect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3]);
       textSize(30);
@@ -235,20 +241,8 @@ function draw() {
         text(infoList[0][5], infoList[0][0]+infoList[0][2]/2,infoList[0][1]+infoList[0][3]/2);
       }
     }
-    dataList = [
-      [5, 200], 
-      [5, 100],
-    ];
-    minionSpeed = 5;
-    archerSpeed = 5;
-    minionList = [];
-    archerList = [];
-    itemList = [];
-    roomList = [];
-    iCount = 0;
-    playerShootLastTime = 0;
-    enemyShootLastTime = 0;
 
+    //displaying help page
     if (helpPage){
       textSize(25);
       stroke(255);
@@ -263,11 +257,29 @@ function draw() {
       text("Space Bar to Switch Weapons ", width/4, 10*height/16, width - width/8, height-height/8);
     }
 
+    //difficulty mode selection
     if (modeSelection){
       for (let i = 0; i < selectionList.length; i++){    
         if (mouseOverRect(selectionList[i][0],selectionList[i][1],selectionList[i][2],selectionList[i][3])){
           fill("red");
-          if (mouseIsPressed){
+
+          //once difficulty mode selected
+          if (mouseIsPressed){    
+
+            //reseting variables
+            dataList = [
+              [5, 200], 
+              [5, 100],
+            ];
+            minionSpeed = 5;
+            archerSpeed = 5;
+            minionList = [];
+            archerList = [];
+            itemList = [];
+            roomList = [];
+            iCount = 0;
+            playerShootLastTime = 0;
+            enemyShootLastTime = 0;
             modeSelection = false;
             startScreen = false;
             lastTime = millis();
@@ -303,7 +315,11 @@ function draw() {
     }
 
   }
+
+  //game play
   if (gameOver === false && startScreen === false) {
+
+    //background music
     if (playingTwo === false){  
       console.log("1");    
       mysteryMusic.pause();
@@ -311,8 +327,12 @@ function draw() {
       playingTwo = true;
       playingOne = false;
     }
+
+    //displaying terrain
     background(48, 77, 95);
     displayGrid(gridSize, gridSize); 
+
+    //time setting
     if (pause === false) { 
       time = millis() - lastTime;
 
@@ -380,6 +400,8 @@ function draw() {
           }
         }
       }
+
+      //enemy bullet splice
       for (let i = 0; i < enemyBulletList.length; i++){
         enemyBulletList[i].move(); 
         if (enemyBulletList[i].x + screenMoveX < 0 || enemyBulletList[i].x + screenMoveX > width || enemyBulletList[i].y < 0 || enemyBulletList[i].y + enemyBulletList[i].height > height){
@@ -399,6 +421,8 @@ function draw() {
           }
         }
       }
+
+      //pick up item
       if (mouseIsPressed){
         for (let i = 0; i < itemList.length; i++){
           let iX = itemList[i].x + itemList[i].width + screenMoveX;
@@ -424,13 +448,19 @@ function draw() {
           }
         }
       }
+
+      //player damage animation splice
       for (let i = 0; i < textList.length; i++){
         textList[i].move();
         if (textList[i].jumpCount === 20){
           textList.splice(i, 1);
         }
       }
+
+      //new round
       if (minionList.length === 0 && archerList.length === 0){
+
+        //display new round 
         if (timeCount >= 0){  
           timeCount -= 1;
           textSize(100);
@@ -439,6 +469,8 @@ function draw() {
           textAlign(CENTER);
           text("Round " + (gameRound+1), width/2, height/2);
         }
+
+        //increase game difficulty
         else {
           timeCount = 40;
           gameRound += 1;
@@ -455,16 +487,22 @@ function draw() {
         }
       }
     }
+
+    //pause setting 
     else {
       for (let i = 0; i < pauseSelectionList.length; i++){    
         if (mouseOverRect(pauseSelectionList[i][0],pauseSelectionList[i][1],pauseSelectionList[i][2],pauseSelectionList[i][3])){
           fill("red");
           if (mouseIsPressed){
+
+            //Home buttom pressed
             if (pauseSelectionList[i][4] === "Home"){
               pause = false;
               combatMusic.pause();
               startScreen = true;
             }
+
+            //Resume button pressed
             else if (pauseSelectionList[i][4] === "Resume"){
               pause = false;
             }
@@ -473,6 +511,8 @@ function draw() {
         else {
           fill("grey");
         }
+
+        //display pause buttons
         rect(pauseSelectionList[i][0],pauseSelectionList[i][1],pauseSelectionList[i][2],pauseSelectionList[i][3]);
         textSize(50);
         stroke(255);
@@ -481,6 +521,8 @@ function draw() {
         text(pauseSelectionList[i][4], pauseSelectionList[i][0]+pauseSelectionList[i][2]/2,pauseSelectionList[i][1]+pauseSelectionList[i][3]/2);
       }
     } 
+
+    //mouse and pause icon collision detection
     if (mouseOverRect(1750*(width/1920), 50*(height/789), 50*(width/1920), 100*(height/789))){
       mouseOverPause = true;
     }
@@ -488,41 +530,52 @@ function draw() {
       mouseOverPause = false;
     }
     
+
+    //player display
     playerOne.display();
+
+    //enemy minions display
     for (let i = 0; i < minionList.length; i++) {
       minionList[i].display();
     }
+
+    //enemy archer display
     for (let i = 0; i < archerList.length; i++) {
       archerList[i].display();
     }
+
+    //items display
     for (let i = 0; i < itemList.length; i++){
       itemList[i].display();
     }
+
+    //player bullet display
     for (let i = 0; i < bulletList.length; i++){
       bulletList[i].display();    
     }
+
+    //enemy bullet display
     for (let i = 0; i < enemyBulletList.length; i++){
       enemyBulletList[i].display();    
     }
+
+    //player damage animation display
     for (let i = 0; i < textList.length; i++){
       textList[i].display();
     }
-    for (let i = 0; i < soundList.length; i++){
-      if (soundList[i][1] + soundList[i][2] > time){
-        soundList[i][0].play();
-      }
-      else {
-        soundList.splice(i, 1);
-      }
-    }
+
+    //player data display
     displayData();
 
+    //if game over
     if (playerOne.health <= 0){
       gameOver = true;
       playingTwo = false;
       combatMusic.pause();
     }
   }
+
+  //game over screen
   if (gameOver){
     textSize(100);
     stroke(255);
@@ -561,16 +614,26 @@ function displayGrid(col, row) {
         fill(48, 77, 95);
         rect(x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
-      if (grid[y][x] === 1) { //wall
+
+      //wall
+      if (grid[y][x] === 1) { 
         image(wallImg, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
       }
-      if (grid[y][x] !== 1 && grid[y][x] !== 0) { //interior
+
+      //interior
+      if (grid[y][x] !== 1 && grid[y][x] !== 0) { 
+
+        //interior terrain 1
         if (grid[y][x] === 2){
           image(floorImgOne, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
+
+        //interior terrain 2
         else if (grid[y][x] === 3) {
           image(floorImgTwo, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
+
+        //interior terrain 3
         else if (grid[y][x] === 4){
           image(floorImgFour, x * cellSize + screenMoveX, y * cellSize + screenMoveY, cellSize, cellSize);
         }
@@ -791,7 +854,7 @@ class EnemyBullet extends Bullet {
     this.damage = damage;
   }
 
-  //enemy bullet movement path
+  //enemy bullet travel path
   move() {
     this.x -= this.disX/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
     this.y -= this.disY/(sqrt(sq(this.disX) + sq(this.disY))/this.speed);
@@ -865,14 +928,14 @@ class Minions {
       }
     } 
 
+    //enemy minion attack
     if (time - this.attackLastTime > 1000) {
-      if (tX - pX > 0) { //checking for enemy character coliision
+      if (tX - pX > 0) { 
         if (tX - pX < this.width) {
           if (tY - pY > 0) { 
             if (tY - pY < this.height) {
               playerOne.health -= this.damage;
             }
-            
           }
           else {
             if (-(this.y - playerOne.y) < playerOne.height) {
@@ -901,6 +964,7 @@ class Minions {
       this.walkCount = 0;
     } 
   }
+  //display enemy minion sprite
   display() {
     if (this.facingLeft) {//, 
       image(hogImgList[0][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
@@ -913,6 +977,7 @@ class Minions {
   }
 }
 
+//enemy archers
 class Archers extends Minions {
   constructor(x, y, width, height, speed, lives, shootSpeed, ShootLastTime) {
     super(x, y, width, height, speed, lives);
@@ -928,7 +993,10 @@ class Archers extends Minions {
     
     this.facingRight = !this.facingLeft; 
   }
+
+  
   move() {
+    //direction facing of enemy archer 
     if (this.x + this.speed < playerOne.x) {
       this.facingLeft = false;
       this.facingRight = true;
@@ -937,7 +1005,7 @@ class Archers extends Minions {
       this.facingLeft = true;
       this.facingRight = false;
     }
-
+    //enemy archer movement 
     if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10 && sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) > cellSize * 3) {
       this.walkCount += 1;
       movementCheck(this);
@@ -957,11 +1025,12 @@ class Archers extends Minions {
         this.walkCount = 0;
       }
     } 
+    //enemy archer attack
     else if (sqrt(sq(playerOne.x - this.x) + sq(playerOne.y - this.y)) < cellSize *10){
       this.shoot();
     }
-    
   }
+  //enemy archer attack
   shoot() {    
     if (time - this.enemyShootLastTime > this.shootSpeed) {
       let enemyBullet = new EnemyBullet(this.x + this.width/2, this.y + this.height/2, 15, 15, 1, dataList[1][0]);
@@ -971,6 +1040,7 @@ class Archers extends Minions {
       laserSound.play();
     }
   }
+  //enemy archer sprite display
   display() {
     if (this.facingLeft) {
       image(archerImgList[1][floor(this.walkCount/6)], this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
@@ -983,6 +1053,7 @@ class Archers extends Minions {
   }
 }
 
+//items
 class Items {
   constructor(x, y, width, height, effect){
     this.x = x;
@@ -993,24 +1064,29 @@ class Items {
   }
 }
 
+//health pot
 class HealthPot extends Items {
   constructor(x, y, width, height, effect){
     super(x, y, width, height, effect);
   }
+  //display sprite
   display() {
     image(healthPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
+//mana pot
 class ManaPot extends Items {
   constructor(x, y, width, height, effect){
     super(x, y, width, height, effect);
   }
+  //display sprite
   display() {
     image(manaPot, this.x + screenMoveX, this.y + screenMoveY, this.width, this.height);
   }
 }
 
+//player attack damage animation 
 class DamageText {
   constructor(x, y, size, value){
     this.x = x;
@@ -1020,6 +1096,8 @@ class DamageText {
     this.jumpCount = 10;
     this.direction = -1;
   }
+
+  //movement of animation
   move(){
     this.x += 1;
     this.y += 0.5 * this.jumpCount * this.direction;
@@ -1033,6 +1111,8 @@ class DamageText {
       this.jumpCount -= 1;
     }
   }
+
+  //display animation
   display(){
     push();
     textSize(this.size);
@@ -1044,15 +1124,13 @@ class DamageText {
   }
 }
 
+//generate dungeon rooms
 function generateRoom(locX, locY) {
   let roomWidth = round(random(4,8));
   let roomHeight = round(random(4,8));
-
   let locationY = locY;
   let locationX = locX;
-
   roomList.push([locationX, locationY, roomWidth, roomHeight]);
-
   for (let y = locationY; y <= locationY + roomHeight; y++) {//walls
     for (let x = locationX; x <= locationX + roomWidth; x++){
       grid[y][x] = 1;
@@ -1060,9 +1138,10 @@ function generateRoom(locX, locY) {
   }
 }
 
+//generate dungeon interior
 function generateInterior(){
   let interior = false;
-  for (let y = 0; y < gridSize; y++) {//interior
+  for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++){
       if (interior === true && grid[y][x] === 1) {
         if (grid[y+1][x] !== 0 && grid[y-1][x] !== 0) {
@@ -1080,23 +1159,29 @@ function generateInterior(){
   }
 } 
 
+//generate dungeon bridge that connect the rooms
 function generateBridge() {
-  if (roomList[iCount-1][1] > roomList[iCount][1]){ //building up
+
+  //building up
+  if (roomList[iCount-1][1] > roomList[iCount][1]){ 
     for (let y = roomList[iCount-1][1]; y > roomList[iCount][1]-1; y--) {
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 4; x++) {
         grid[y][x] = 1;
       }
     }
   }
-  else if (roomList[iCount][1] > roomList[iCount-1][1]) { //building down
+
+  //building down
+  else if (roomList[iCount][1] > roomList[iCount-1][1]) { 
     for (let y = roomList[iCount-1][1]; y < roomList[iCount][1]+3; y++) {
       for (let x = roomList[iCount-1][0] ; x < roomList[iCount-1][0] + 4; x++) {
         grid[y][x] = 1;
       }
     }
   }
-
-  if (roomList[iCount-1][0] > roomList[iCount][0]) { //building left
+  
+  //building left
+  if (roomList[iCount-1][0] > roomList[iCount][0]) { 
     for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 4; y++) {
       for (let x = roomList[iCount-1][0]; x > roomList[iCount][0]; x--) {
         grid[y][x] = 1;
@@ -1104,7 +1189,8 @@ function generateBridge() {
     }
   }
 
-  else if (roomList[iCount-1][0] < roomList[iCount][0]) {//building right
+  //building right
+  else if (roomList[iCount-1][0] < roomList[iCount][0]) {
     for (let y = roomList[iCount][1]; y < roomList[iCount][1] + 4; y++) {
       for (let x = roomList[iCount-1][0]; x < roomList[iCount][0]; x++) {
         grid[y][x] = 1;
@@ -1113,6 +1199,7 @@ function generateBridge() {
   }
 }
 
+//generate dungeon
 function generateDungeon() { 
   roomNumber = round(random(10,14)); 
   for (let i = 0; i < roomNumber; i++) {
@@ -1125,6 +1212,7 @@ function generateDungeon() {
   generateInterior();
 } 
 
+//generate spawning location of player
 function spawnLocation() { 
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -1135,7 +1223,10 @@ function spawnLocation() {
   }
 }
 
+//spawn enemies
 function spawnEnemies() {
+
+  //counting amount of space to determine enemy quantity 
   for (let i = 0; i < roomNumber; i++){
     let spaceCount = 0;
     for (let y = roomList[i][1]; y < roomList[i][1] + roomList[i][3]; y++){
@@ -1145,10 +1236,14 @@ function spawnEnemies() {
         }
       }
     }
+
+    //spawn minions 
     for (let a = 0; a < round(spaceCount/30); a++) {
       let minion = new Minions(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize*1.15/2, cellSize*1.15/2.5, minionSpeed, dataList[0][1], dataList[0][0]);
       minionList.push(minion);
     }
+
+    //spawn archers
     for (let a = 0; a < round(spaceCount/10); a++) {
       let archer = new Archers(round(random((roomList[i][0]+1) * cellSize, (roomList[i][0] + roomList[i][2]-1) * cellSize)), round(random((roomList[i][1]+1)* cellSize, (roomList[i][1] + roomList[i][3]-1)* cellSize)), cellSize/1.75, cellSize/1.75, archerSpeed, dataList[1][1], 1000, 0);//enemyShootLastTime
       archerList.push(archer);
@@ -1156,6 +1251,7 @@ function spawnEnemies() {
   }  
 }
 
+//display player data
 function displayData() {
   if (playerOne.health > 0) {
     image(health, 105*(width/1920), 67, playerOne.health*3.1*(width/1920), 42);
@@ -1185,17 +1281,17 @@ function displayData() {
   pop();
 }
 
+//movement sanity check
 function movementCheck(object){
-
   object.rightFree = true;
   object.leftFree = true;
   object.upFree = true;
   object.downFree = true;
-
   object.positionY = floor(object.y/cellSize);
   object.positionX = floor(object.x/cellSize);
 
-  if (object.positionY <= gridSize-2) { //moving down sanity check 
+  //moving down sanity check 
+  if (object.positionY <= gridSize-2) { 
     if (grid[object.positionY+1][object.positionX] === 1 && object.y + object.height + object.speed >= (object.positionY+1) * cellSize) {
       object.downFree = false;
     }
@@ -1204,7 +1300,8 @@ function movementCheck(object){
     }
   }
 
-  if (object.positionY >= 1) {//moving up sanity check
+  //moving up sanity check
+  if (object.positionY >= 1) {
     if (grid[object.positionY-1][object.positionX] === 1 && object.y - object.speed <= (object.positionY) * cellSize) {
       object.upFree = false;
     }
@@ -1213,8 +1310,8 @@ function movementCheck(object){
     }
   }
 
-  
-  if (object.positionX <= gridSize-2) {//moving right sanity check
+  //moving right sanity check
+  if (object.positionX <= gridSize-2) {
     if (object.positionY >= 1) {
       if (grid[object.positionY][object.positionX+1] === 1 && object.x + object.width + object.speed >= (object.positionX+1) * cellSize) {
         object.rightFree = false;
@@ -1229,7 +1326,8 @@ function movementCheck(object){
     }
   }
 
-  if (object.positionX >= 1) {//moving left sanity check
+  //moving left sanity check
+  if (object.positionX >= 1) {
     if (object.positionY >= 1) {
       if (grid[object.positionY][object.positionX-1] === 1 && object.x - object.speed <= (object.positionX) * cellSize) {
         object.leftFree = false;
@@ -1245,28 +1343,37 @@ function movementCheck(object){
   }
 }
 
+//player slash and enemy detection
 function slashcollision(slasher, target) {
   angleMode(DEGREES);
   let arcRadius = (slasher.width+100)/2;
   let ARC_ANGLE = 90;
 
+  
   for (let i = 0; i < target.length; i++) {
     if (sqrt(sq(slasher.x - slasher.x) + sq(slasher.y - slasher.y)) < cellSize *3) {
+      //if top left corner of enemy is in slash range 
       if (collidePointArc(target[i].x+ screenMoveX, target[i].y+ screenMoveY, slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
+
+      //if bottom left corner of enemy is in slash range 
       else if (collidePointArc(target[i].x + screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
+
+      //if top right corner of enemy is in slash range 
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)) {
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
         textList.push(attack);
       }
+
+      //if bottom right corner of enemy is in slash range 
       else if (collidePointArc(target[i].x + target[i].width+ screenMoveX, target[i].y + target[i].height+ screenMoveY , slasher.x + screenMoveX + slasher.width/2, slasher.y + screenMoveY + slasher.height/2, arcRadius, slashAngle + 345, ARC_ANGLE)){
         target[i].lives -= slasher.damage;
         let attack = new DamageText(target[i].x, target[i].y, 15, slasher.damage);
@@ -1276,22 +1383,30 @@ function slashcollision(slasher, target) {
   }
 }
 
+//keys
 function keyPressed() {
+
+  //if space bar pressed
   if (keyCode === 32) {
+
+    //switch between melee and range
     if (startScreen === false && gameOver === false){
       if (range) {
         range = false;
         melee = true;
       }
-
       else if (melee) {
         melee = false;
         range = true;
       }
     }
+
+    //display mode selection
     else if (startScreen){
       modeSelection = true;
     }
+
+    //restart game if gameover 
     else if (gameOver){
       gameOver = false;
       startScreen = true;
@@ -1299,15 +1414,21 @@ function keyPressed() {
   }
 }
 
+
 function mousePressed(){
+
+  //pause game if mouse clicked on icon
   if (mouseOverPause) {
     pause = !pause;
   }
+
+  //display help page
   if (mouseOverRect(infoList[0][0],infoList[0][1],infoList[0][2],infoList[0][3])){
     helpPage = !helpPage;
   }
 }
 
+//generate and display mini map
 function miniMap(){
   fill(142, 142, 142, 100);
   rect(1550*(width/1920), 170*(height/789), grid[0].length*(cellSize/24), grid.length*(cellSize/24)); 
@@ -1332,6 +1453,7 @@ function miniMap(){
   } 
 }
 
+//mouse and rectangular shape detection 
 function mouseOverRect(x, y, rectWidth, rectHeight){
   if (mouseX > x && mouseX < x+rectWidth && mouseY > y && mouseY < y+rectHeight) {
     return true;
