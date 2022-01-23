@@ -967,13 +967,16 @@ class Minions {
   //display enemy minion sprite
   display() {
     if (this.facingLeft) {//, 
-      image(hogImgList[0][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
+      image(hogImgList[0][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], 
+      this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
     if (this.facingRight) {
-      image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
+      image(hogImgList[1][floor(this.walkCount/6)], this.x + screenMoveX- hogImgPositionList[floor(this.walkCount/6)], 
+      this.y + screenMoveY- hogImgPositionList[floor(this.walkCount/6)], this.width, this.height);
     }
     fill("green");
-    rect(this.x+screenMoveX+this.width/2-width/40*(this.lives/dataList[0][1])/2, this.y+screenMoveY-this.height/2,width/40*(this.lives/dataList[0][1]),height/100);
+    rect(this.x+screenMoveX+this.width/2-width/40*(this.lives/dataList[0][1])/2, 
+    this.y+screenMoveY-this.height/2,width/40*(this.lives/dataList[0][1]),height/100);
   }
 }
 
