@@ -12,7 +12,8 @@ The major project will be a video game. The video game will be a 2 dimensional (
 - old* (Character being able to locate enemy direction and attack enemies)
 - new* (Character being able to attack enemy)
 - Enemies being able to locate and attack the player 
-- displaying character data (health, damage) and enemy data
+- old*(displaying character data (health, damage) and enemy data)
+- new*(displaying character data (health, damage) and enemy health)
 - Sound effects and music 
 
 ## Nice to Have List 

@@ -147,7 +147,9 @@ function preload() {
   pressToStartImg = loadImage("assets/press_to_start.png");
 
   //music
-  soundFormats("ogg");
+  //soundFormats("ogg");
+  soundFormats("mp3");
+  
   combatMusic = loadSound("assets/combat_music.mp3");
   mysteryMusic = loadSound("assets/mysterious_music.mp3");
 
@@ -392,7 +394,7 @@ function draw() {
         else {
           let blocks = [
             {x: floor(bulletList[i].x/cellSize) * cellSize, y: floor(bulletList[i].y/cellSize) * cellSize},
-          ]
+          ];
           if (grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 1 || grid[floor(bulletList[i].y/cellSize)][floor(bulletList[i].x/cellSize)] === 0){
             if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, bulletList[i].x, bulletList[i].y, bulletList[i].radius)){
               bulletList.splice(i, 1);
@@ -413,7 +415,7 @@ function draw() {
         else {
           let blocks = [
             {x: floor(enemyBulletList[i].x/cellSize) * cellSize, y: floor(enemyBulletList[i].y/cellSize) * cellSize},
-          ]
+          ];
           if (grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 1 || grid[floor(enemyBulletList[i].y/cellSize)][floor(enemyBulletList[i].x/cellSize)] === 0){
             if (collideRectCircle(blocks[0].x, blocks[0].y, cellSize, cellSize, enemyBulletList[i].x, enemyBulletList[i].y, enemyBulletList[i].radius)){
               enemyBulletList.splice(i, 1);
